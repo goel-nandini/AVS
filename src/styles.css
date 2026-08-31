@@ -944,9 +944,53 @@ button {
 
 /* ---- TWO LOCATIONS SECTION ---- */
 .locations-section {
-  padding: 85px 0 85px;
+  position: relative;
+  padding: 95px 0 95px;
   background: #FCF9F4;
   text-align: center;
+  overflow: hidden;
+}
+
+/* Background waves */
+.locations-bg-waves {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.locations-wave-svg {
+  position: absolute;
+  bottom: 0;
+  left: -5%;
+  width: 110%;
+  height: 100%;
+  transform: translateX(var(--loc-wave-shift, 0px));
+  animation: locWaveDrift 20s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes locWaveDrift {
+  0% {
+    transform: translateX(calc(var(--loc-wave-shift, 0px) - 2%)) scaleY(1);
+  }
+  50% {
+    transform: translateX(calc(var(--loc-wave-shift, 0px) + 2%)) scaleY(1.035);
+  }
+  100% {
+    transform: translateX(calc(var(--loc-wave-shift, 0px) - 2%)) scaleY(1);
+  }
+}
+
+/* Heading & Decorative Gold Line */
+.locations-heading-wrap {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .locations-heading {
@@ -955,11 +999,22 @@ button {
   font-weight: 400;
   letter-spacing: 1px;
   color: #12211A;
-  margin-bottom: 48px;
+  margin-bottom: 14px;
   text-transform: uppercase;
 }
 
+.locations-heading-line {
+  height: 1.5px;
+  width: 0;
+  background: linear-gradient(90deg, rgba(197, 154, 63, 0) 0%, #C59A3F 50%, rgba(197, 154, 63, 0) 100%);
+  border-radius: 1px;
+  margin: 0 auto;
+}
+
+/* Grid */
 .locations-grid {
+  position: relative;
+  z-index: 1;
   max-width: 1240px;
   margin: 0 auto;
   padding: 0 32px;
@@ -969,6 +1024,92 @@ button {
   align-items: center;
 }
 
+/* Entrance Animations - Initial states */
+.locations-section .locations-heading-wrap {
+  opacity: 0;
+  transform: translateY(15px);
+  will-change: transform, opacity;
+}
+
+.locations-section .location-card.card-left {
+  opacity: 0;
+  transform: translateX(-24px);
+  will-change: transform, opacity;
+}
+
+.locations-section .location-center {
+  opacity: 0;
+  transform: scale(0.97);
+  will-change: transform, opacity;
+}
+
+.locations-section .location-card.card-right {
+  opacity: 0;
+  transform: translateX(24px);
+  will-change: transform, opacity;
+}
+
+/* Entrance Animations - Triggered on in-view */
+.locations-section.in-view .locations-heading-wrap {
+  animation: locHeadingEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+}
+
+.locations-section.in-view .locations-heading-line {
+  animation: locLineWidth 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+}
+
+.locations-section.in-view .location-card.card-left {
+  animation: locCardLeftEntrance 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.35s forwards;
+}
+
+.locations-section.in-view .location-center {
+  animation: locCenterEntrance 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.45s forwards;
+}
+
+.locations-section.in-view .location-card.card-right {
+  animation: locCardRightEntrance 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.55s forwards;
+}
+
+@keyframes locHeadingEntrance {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes locLineWidth {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 76px;
+    opacity: 1;
+  }
+}
+
+@keyframes locCardLeftEntrance {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes locCenterEntrance {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes locCardRightEntrance {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Location Cards */
 .location-card {
   background: #FAF6EF;
   border: 1px solid #EBE3D3;
@@ -978,6 +1119,16 @@ button {
   flex-direction: column;
   align-items: center;
   text-align: center;
+  position: relative;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  transition: transform 0.35s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.35s ease, border-color 0.35s ease, background-color 0.35s ease;
+}
+
+.location-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(197, 154, 63, 0.42);
+  box-shadow: 0 16px 36px rgba(197, 154, 63, 0.1), 0 4px 12px rgba(0, 0, 0, 0.03);
+  background-color: #FDFBF7;
 }
 
 .location-pin {
@@ -989,6 +1140,15 @@ button {
   font-weight: 700;
   color: #12211A;
   margin-bottom: 14px;
+}
+
+.location-pin svg {
+  transition: transform 0.3s ease-out, filter 0.3s ease-out;
+}
+
+.location-card:hover .location-pin svg {
+  transform: translateY(-2px) scale(1.06);
+  filter: drop-shadow(0 2px 7px rgba(197, 154, 63, 0.5));
 }
 
 .location-addr {
@@ -1007,7 +1167,11 @@ button {
 }
 
 .location-btn {
-  padding: 9px 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 24px;
   background: #FFFFFF;
   border: 1px solid #DECFA9;
   border-radius: 4px;
@@ -1016,40 +1180,127 @@ button {
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: #8A661F;
-  transition: var(--transition-smooth);
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.location-btn .loc-btn-arrow {
+  display: inline-block;
+  font-size: 13px;
+  line-height: 1;
+  transition: transform 0.25s ease-out;
 }
 
 .location-btn:hover {
   background: var(--gold-primary);
   color: #FFFFFF;
   border-color: var(--gold-primary);
+  box-shadow: 0 4px 14px rgba(197, 154, 63, 0.28);
+}
+
+.location-btn:hover .loc-btn-arrow {
+  transform: translateX(4px);
 }
 
 .location-btn-outline {
   background: transparent;
 }
 
-/* Location center image with lotus badge */
+/* Center image container */
 .location-center {
   position: relative;
   height: 280px;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(197, 154, 63, 0.18);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.location-center:hover {
+  border-color: rgba(197, 154, 63, 0.45);
+  box-shadow: 0 16px 40px rgba(10, 26, 20, 0.16), 0 0 24px rgba(197, 154, 63, 0.12);
 }
 
 .location-center-img {
   width: 100%;
   height: 100%;
   position: relative;
+  overflow: hidden;
+  transform: translate3d(var(--loc-mouse-x, 0px), calc(var(--loc-mouse-y, 0px) + var(--loc-scroll-y, 0px)), 0);
+  transition: transform 0.28s cubic-bezier(0.2, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.location-center-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  animation: kenBurnsLocations 16s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes kenBurnsLocations {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.045);
+  }
 }
 
 .location-center-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(10, 26, 20, 0.35);
+  background: rgba(10, 26, 20, 0.32);
+  pointer-events: none;
 }
 
+/* Gold Particles */
+.location-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 3;
+}
+
+.location-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212, 165, 56, 0.65) 0%, rgba(212, 165, 56, 0.1) 70%, transparent 100%);
+  pointer-events: none;
+  animation: locParticleFloat 6.5s ease-in-out infinite;
+}
+
+.location-particle.p-1 { width: 3.5px; height: 3.5px; left: 18%; top: 72%; animation-duration: 7.2s; animation-delay: 0.2s; }
+.location-particle.p-2 { width: 2.5px; height: 2.5px; left: 32%; top: 80%; animation-duration: 8.8s; animation-delay: 1.6s; }
+.location-particle.p-3 { width: 4px; height: 4px; left: 46%; top: 66%; animation-duration: 6.9s; animation-delay: 0.8s; }
+.location-particle.p-4 { width: 3px; height: 3px; left: 62%; top: 76%; animation-duration: 9.2s; animation-delay: 2.4s; }
+.location-particle.p-5 { width: 3.5px; height: 3.5px; left: 76%; top: 82%; animation-duration: 7.8s; animation-delay: 1.2s; }
+.location-particle.p-6 { width: 2px; height: 2px; left: 86%; top: 64%; animation-duration: 8.4s; animation-delay: 3.1s; }
+.location-particle.p-7 { width: 3px; height: 3px; left: 24%; top: 38%; animation-duration: 9.8s; animation-delay: 2.1s; }
+.location-particle.p-8 { width: 2.5px; height: 2.5px; left: 82%; top: 42%; animation-duration: 8.6s; animation-delay: 0.6s; }
+
+@keyframes locParticleFloat {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.42;
+  }
+  75% {
+    opacity: 0.32;
+  }
+  100% {
+    transform: translateY(-44px) translateX(7px);
+    opacity: 0;
+  }
+}
+
+/* Lotus Emblem Badge */
 .location-lotus-badge {
   position: absolute;
   top: 50%;
@@ -1059,11 +1310,37 @@ button {
   height: 72px;
   border-radius: 50%;
   background: #081711;
-  border: 2px solid var(--gold-primary);
+  border: 1.5px solid rgba(197, 154, 63, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 14px rgba(197, 154, 63, 0.25);
+  animation: lotusBadgeBreathe 3.6s ease-in-out infinite;
+  transition: transform 0.35s ease-out, box-shadow 0.35s ease-out, border-color 0.35s ease-out;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.location-lotus-badge:hover {
+  animation-play-state: paused;
+  transform: translate(-50%, -50%) scale(1.06) rotate(3deg) !important;
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.5), 0 0 30px rgba(197, 154, 63, 0.65) !important;
+  border-color: #D4A538;
+}
+
+@keyframes lotusBadgeBreathe {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 12px rgba(197, 154, 63, 0.2);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.038);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45), 0 0 22px rgba(197, 154, 63, 0.48);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 12px rgba(197, 154, 63, 0.2);
+  }
 }
 
 /* ---- AVS PROMISE (DARK BANNER) ---- */
@@ -1539,6 +1816,22 @@ button {
   .locations-grid {
     grid-template-columns: 1fr;
     max-width: 480px;
+    gap: 28px;
+  }
+  .location-center {
+    order: -1;
+    height: 250px;
+  }
+  .location-particles {
+    display: none;
+  }
+  .locations-section .location-card.card-left,
+  .locations-section .location-card.card-right {
+    transform: translateY(20px);
+  }
+  .locations-section.in-view .location-card.card-left,
+  .locations-section.in-view .location-card.card-right {
+    animation-name: locHeadingEntrance;
   }
   .promise-content {
     grid-template-columns: 1fr;
@@ -1589,5 +1882,50 @@ button {
     right: 20px;
     left: 20px;
     max-width: none;
+  }
+  .locations-section {
+    padding: 65px 0 65px;
+  }
+  .locations-grid {
+    padding: 0 20px;
+  }
+  .location-center {
+    height: 220px;
+  }
+  .location-card {
+    padding: 30px 20px;
+  }
+}
+
+/* Accessibility: prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .locations-section .locations-heading-wrap,
+  .locations-section .location-card.card-left,
+  .locations-section .location-center,
+  .locations-section .location-card.card-right {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  .locations-heading-line {
+    width: 76px !important;
+    opacity: 1 !important;
+    animation: none !important;
+  }
+  .location-center-img img,
+  .locations-wave-svg,
+  .location-lotus-badge,
+  .location-particle {
+    animation: none !important;
+  }
+  .location-center-img {
+    transform: none !important;
+  }
+  .location-card,
+  .location-btn,
+  .location-btn .loc-btn-arrow,
+  .location-pin svg {
+    transition: none !important;
+    transform: none !important;
   }
 }

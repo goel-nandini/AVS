@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 const announceItems = [
   '⭐ New Client Offer: Get 15% Off on Your First Visit',
@@ -209,6 +209,59 @@ function App() {
     event.currentTarget.style.setProperty('--wave-shift-y', '0px');
     event.currentTarget.style.setProperty('--wave-rotate', '0deg');
   };
+
+  const locationsRef = useRef(null);
+  const [locationsVisible, setLocationsVisible] = useState(false);
+
+  const handleCenterMouseMove = (event) => {
+    if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width - 0.5) * 14;
+    const y = ((event.clientY - rect.top) / rect.height - 0.5) * 14;
+    event.currentTarget.style.setProperty('--loc-mouse-x', `${x}px`);
+    event.currentTarget.style.setProperty('--loc-mouse-y', `${y}px`);
+  };
+
+  const handleCenterMouseLeave = (event) => {
+    event.currentTarget.style.setProperty('--loc-mouse-x', '0px');
+    event.currentTarget.style.setProperty('--loc-mouse-y', '0px');
+  };
+
+  useEffect(() => {
+    const locSection = locationsRef.current;
+    if (!locSection) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setLocationsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(locSection);
+
+    const handleLocScroll = () => {
+      if (!locSection) return;
+      const rect = locSection.getBoundingClientRect();
+      const windowH = window.innerHeight;
+      if (rect.top < windowH && rect.bottom > 0) {
+        const progress = (rect.top + rect.height / 2 - windowH / 2) / (windowH / 2);
+        const shiftY = Math.max(-10, Math.min(10, -progress * 7));
+        locSection.style.setProperty('--loc-scroll-y', `${shiftY}px`);
+        locSection.style.setProperty('--loc-wave-shift', `${-progress * 14}px`);
+      }
+    };
+
+    window.addEventListener('scroll', handleLocScroll, { passive: true });
+    handleLocScroll();
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('scroll', handleLocScroll);
+    };
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -553,23 +606,57 @@ function App() {
         </div>
       </section>
 
-      <section className="locations-section" id="packages" aria-labelledby="locations-heading">
-        <h2 className="locations-heading reveal-up" id="locations-heading">Two Locations. One Promise.</h2>
+      <section
+        ref={locationsRef}
+        className={`locations-section ${locationsVisible ? 'in-view' : ''}`}
+        id="packages"
+        aria-labelledby="locations-heading"
+      >
+        <div className="locations-bg-waves" aria-hidden="true">
+          <svg className="locations-wave-svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+            <path
+              d="M0,96L48,112C96,128,192,160,288,165.3C384,171,480,149,576,128C672,107,768,85,864,96C960,107,1056,149,1152,154.7C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+              fill="rgba(197, 154, 63, 0.035)"
+            />
+            <path
+              d="M0,192L48,181.3C96,171,192,149,288,154.7C384,160,480,192,576,197.3C672,203,768,181,864,160C960,139,1056,117,1152,122.7C1248,128,1344,160,1392,176L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+              fill="rgba(16, 44, 34, 0.025)"
+            />
+          </svg>
+        </div>
+
+        <div className="locations-heading-wrap">
+          <h2 className="locations-heading" id="locations-heading">Two Locations. One Promise.</h2>
+          <div className="locations-heading-line" aria-hidden="true"></div>
+        </div>
+
         <div className="locations-grid">
-          <div className="location-card reveal-up">
+          <div className="location-card card-left">
             <div className="location-pin">
               <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#c49a3c"/><circle cx="12" cy="9" r="2.5" fill="#fff"/></svg>
               Brampton
             </div>
             <address className="location-addr">157 Queen Street West,<br />Brampton, ON L6Y 1P9</address>
-            <a href="https://maps.google.com/?q=157+Queen+Street+West+Brampton+ON" target="_blank" rel="noopener noreferrer" className="location-btn" id="loc-directions-btn">Directions</a>
+            <a href="https://maps.google.com/?q=157+Queen+Street+West+Brampton+ON" target="_blank" rel="noopener noreferrer" className="location-btn" id="loc-directions-btn">
+              <span>Directions</span>
+              <span className="loc-btn-arrow" aria-hidden="true">→</span>
+            </a>
           </div>
 
-          <div className="location-center reveal-up">
+          <div
+            className="location-center"
+            onMouseMove={handleCenterMouseMove}
+            onMouseLeave={handleCenterMouseLeave}
+          >
+            <div className="location-particles" aria-hidden="true">
+              {[...Array(8)].map((_, i) => (
+                <span key={i} className={`location-particle p-${i + 1}`}></span>
+              ))}
+            </div>
             <div className="location-center-img">
               <img src="/promise_bg.jpg" alt="Aura Vital Star Rejuvenation Centre" />
               <div className="location-center-overlay"></div>
-              <div className="location-lotus-badge">
+              <div className="location-lotus-badge" title="Aura Vital Star Lotus Emblem">
                 <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg" width="48" height="48">
                   <circle cx="30" cy="30" r="28" stroke="#c49a3c" strokeWidth="1.2"/>
                   <path d="M30 16 C30 16 22 22 22 29 C22 33 25 36 30 37 C35 36 38 33 38 29 C38 22 30 16 30 16Z" fill="#c49a3c" opacity="0.8"/>
@@ -580,13 +667,16 @@ function App() {
             </div>
           </div>
 
-          <div className="location-card reveal-up">
+          <div className="location-card card-right">
             <div className="location-pin">
               <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#c49a3c"/><circle cx="12" cy="9" r="2.5" fill="#fff"/></svg>
               Mississauga
             </div>
             <p className="location-coming">Coming Soon</p>
-            <a href="#contact" className="location-btn location-btn-outline" id="loc-learn-btn">Learn More</a>
+            <a href="#contact" className="location-btn location-btn-outline" id="loc-learn-btn">
+              <span>Learn More</span>
+              <span className="loc-btn-arrow" aria-hidden="true">→</span>
+            </a>
           </div>
         </div>
       </section>
