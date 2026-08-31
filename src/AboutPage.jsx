@@ -61,87 +61,126 @@ export default function AboutPage({ onBookClick }) {
   return (
     <div className="about-page-wrapper">
       {/* ===================================================
-          SECTION 1 — ABOUT HERO
+          SECTION 1 — ABOUT HERO (EDITORIAL Z-DEPTH SANCTUARY)
           =================================================== */}
       <section className="about-hero" id="about-hero" aria-label="About Aura Vital Star">
+        {/* Layer 1 & 2: Atmospheric Z-Depth Glow & Botanical Line-Art */}
         <div className="about-hero-bg-accent" aria-hidden="true">
-          <div className="about-glow-orb"></div>
+          <div className="about-glow-orb about-glow-orb-primary"></div>
+          <div className="about-glow-orb about-glow-orb-secondary"></div>
+
+          {/* Subtle Botanical SVG Flora Behind Content */}
+          <svg className="about-hero-botanical-bg" viewBox="0 0 300 300" fill="none">
+            <path d="M30 270 Q100 170 200 110 T280 20" stroke="#B9975B" strokeWidth="1" strokeLinecap="round" opacity="0.08"/>
+            <path d="M120 170 Q160 140 180 160 T140 190" stroke="#B9975B" strokeWidth="0.8" opacity="0.07"/>
+            <path d="M180 120 Q220 90 240 110 T200 140" stroke="#B9975B" strokeWidth="0.8" opacity="0.07"/>
+            <path d="M60 220 Q90 190 110 210 T80 240" stroke="#B9975B" strokeWidth="0.6" opacity="0.06"/>
+          </svg>
+
+          {/* Lower Floating Botanical Flora */}
+          <svg className="about-hero-botanical-lower" viewBox="0 0 240 240" fill="none">
+            <circle cx="120" cy="120" r="110" stroke="#B9975B" strokeWidth="0.7" opacity="0.04" />
+            <path d="M120 40 C120 40 80 80 80 130 C80 160 100 180 120 185 C140 180 160 160 160 130 C160 80 120 40 120 40 Z" stroke="#B9975B" strokeWidth="0.9" opacity="0.06"/>
+            <path d="M80 90 C50 80 20 110 20 150 C25 180 50 190 80 190" stroke="#B9975B" strokeWidth="0.8" opacity="0.05" />
+            <path d="M160 90 C190 80 220 110 220 150 C215 180 190 190 160 190" stroke="#B9975B" strokeWidth="0.8" opacity="0.05" />
+          </svg>
         </div>
 
         <div className="about-container">
-          <div className="about-hero-grid">
-            {/* Left Content */}
-            <div className="about-hero-content">
+          <div className="about-hero-editorial-layout">
+            {/* Left Content Column */}
+            <div className="about-hero-content-col">
               <div className="about-eyebrow-row">
                 <span className="about-eyebrow-star" aria-hidden="true">&#10022;</span>
                 <span className="about-eyebrow">ABOUT AURA VITAL STAR</span>
               </div>
 
               <h1 className="about-hero-headline">
-                Rooted in Care.<br />
-                <span className="gold-text">Driven by Wellness.</span>
+                <span className="about-headline-ivory">Rooted in Care.</span><br />
+                <span className="about-headline-gold">Driven by Wellness.</span>
               </h1>
 
               <div className="about-hero-divider" aria-hidden="true"></div>
 
               <p className="about-hero-desc">
-                At Aura Vital Star, we believe true beauty and wellness come from balance &mdash; of body, mind, and soul. Our mission is to provide a sanctuary where advanced care meets personal attention, helping you look good, feel great, and live well.
+                At Aura Vital Star, we believe true beauty and wellness come from balance &mdash; of body, mind, and soul. Our sanctuary brings clinical expertise and personalized luxury together under one roof, helping you look, feel, and live at your absolute best.
               </p>
 
-              <div className="about-hero-features">
-                <div className="about-feature-item">
-                  <span className="about-feature-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
-                      <path d="M12 2L15 8L21 9L17 14L18 20L12 17L6 20L7 14L3 9L9 8L12 2Z" stroke="#B9975B" strokeWidth="1.5" strokeLinejoin="round"/>
-                    </svg>
-                  </span>
-                  <span className="about-feature-text">EXPERT PROFESSIONALS</span>
-                </div>
+              {/* Editorial Brand Signature */}
+              <div className="about-brand-signature-row">
+                <span className="signature-pill">BEAUTY</span>
+                <span className="signature-sep" aria-hidden="true">&bull;</span>
+                <span className="signature-pill">WELLNESS</span>
+                <span className="signature-sep" aria-hidden="true">&bull;</span>
+                <span className="signature-pill">RMT</span>
+              </div>
 
-                <div className="about-feature-sep" aria-hidden="true">&bull;</div>
-
-                <div className="about-feature-item">
-                  <span className="about-feature-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
-                      <circle cx="12" cy="12" r="9" stroke="#B9975B" strokeWidth="1.5"/>
-                      <path d="M12 7v5l3 3" stroke="#B9975B" strokeWidth="1.5" strokeLinecap="round"/>
-                    </svg>
-                  </span>
-                  <span className="about-feature-text">PREMIUM PRODUCTS</span>
-                </div>
-
-                <div className="about-feature-sep" aria-hidden="true">&bull;</div>
-
-                <div className="about-feature-item">
-                  <span className="about-feature-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
-                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="#B9975B" strokeWidth="1.5" fill="none"/>
-                    </svg>
-                  </span>
-                  <span className="about-feature-text">PERSONALIZED CARE</span>
-                </div>
+              {/* Discover Story Text CTA (Desktop) */}
+              <div className="about-hero-action-row about-hero-action-desktop">
+                <a
+                  href="#our-story"
+                  className="about-story-cta-link"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const target = document.getElementById('our-story');
+                    if (target) target.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  <span>DISCOVER OUR STORY</span>
+                  <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </a>
               </div>
             </div>
 
-            {/* Right Cinematic Hero Image */}
-            <div className="about-hero-media">
-              <div className="about-hero-image-frame">
-                <img
-                  src="/hero_brand_bg.jpg"
-                  alt="Aura Vital Star luxury wellness sanctuary interior"
-                  className="about-hero-img"
-                />
-                <div className="about-hero-overlay" aria-hidden="true"></div>
-                <div className="about-hero-border-accent" aria-hidden="true"></div>
+            {/* Right Wide Cinematic Interior Visual */}
+            <div className="about-hero-visual-col">
+              <div className="about-hero-cinematic-stage">
+                {/* Vertical Decorative Brand Label */}
+                <div className="about-vertical-brand-label" aria-hidden="true">
+                  <span>AURA VITAL STAR &bull; WELLNESS EXPERIENCE</span>
+                </div>
 
-                {/* Corner Botanical Line-art */}
-                <div className="about-botanical-corner" aria-hidden="true">
-                  <svg viewBox="0 0 100 100" width="85" height="85" fill="none">
-                    <path d="M10 90 Q30 50 85 15" stroke="#B9975B" strokeWidth="1.2" opacity="0.65"/>
-                    <path d="M45 40 Q60 30 75 35 Q65 50 45 40" stroke="#B9975B" strokeWidth="1" opacity="0.6"/>
-                    <path d="M28 60 Q42 52 55 58 Q46 72 28 60" stroke="#B9975B" strokeWidth="1" opacity="0.6"/>
-                    <path d="M18 78 Q30 72 38 80 Q28 90 18 78" stroke="#B9975B" strokeWidth="1" opacity="0.5"/>
-                  </svg>
+                <div className="about-hero-image-cinematic-frame">
+                  <img
+                    src="/about_hero_interior.jpg"
+                    alt="Aura Vital Star luxurious wellness and beauty sanctuary reception lounge"
+                    className="about-hero-cinematic-img"
+                  />
+                  {/* Left-edge smooth emerald dissolve gradient */}
+                  <div className="about-hero-edge-blend" aria-hidden="true"></div>
+                  {/* Atmospheric depth overlay */}
+                  <div className="about-hero-cinematic-overlay" aria-hidden="true"></div>
+                  {/* Subtle champagne-gold fine border */}
+                  <div className="about-hero-gold-hairline" aria-hidden="true"></div>
+
+                  {/* Corner Botanical Line-art Detail */}
+                  <div className="about-botanical-corner" aria-hidden="true">
+                    <svg viewBox="0 0 100 100" width="75" height="75" fill="none">
+                      <path d="M10 90 Q30 50 85 15" stroke="#B9975B" strokeWidth="1.1" opacity="0.6"/>
+                      <path d="M45 40 Q60 30 75 35 Q65 50 45 40" stroke="#B9975B" strokeWidth="0.9" opacity="0.55"/>
+                      <path d="M28 60 Q42 52 55 58 Q46 72 28 60" stroke="#B9975B" strokeWidth="0.9" opacity="0.55"/>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Discover Story Text CTA (Mobile - below image) */}
+                <div className="about-hero-action-row about-hero-action-mobile">
+                  <a
+                    href="#our-story"
+                    className="about-story-cta-link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const target = document.getElementById('our-story');
+                      if (target) target.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                  >
+                    <span>DISCOVER OUR STORY</span>
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </a>
                 </div>
               </div>
             </div>
