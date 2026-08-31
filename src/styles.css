@@ -532,8 +532,8 @@ button {
   background: radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgba(255, 236, 183, 0.85) 0%, rgba(212, 172, 84, 0.45) 16%, rgba(255, 255, 255, 0) 42%);
   filter: blur(26px);
   opacity: 1;
-  transform: translate(var(--wave-shift-x), var(--wave-shift-y)) scale(1.15);
-  transition: transform 0.2s ease-out;
+  transform: translate(var(--wave-shift-x, 0px), var(--wave-shift-y, 0px)) scale(1.02);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
 }
 
@@ -544,8 +544,8 @@ button {
   border-radius: 30% 70% 52% 48% / 38% 49% 51% 62%;
   border: 1.5px solid rgba(197, 154, 63, 0.65);
   box-shadow: inset 0 0 30px rgba(197, 154, 63, 0.22), 0 0 42px rgba(197, 154, 63, 0.18);
-  transform: translate(var(--wave-shift-x), var(--wave-shift-y)) rotate(var(--wave-rotate));
-  animation: waterBorder 9s ease-in-out infinite alternate;
+  transform: translate(var(--wave-shift-x, 0px), var(--wave-shift-y, 0px));
+  animation: waterBorder 12s ease-in-out infinite alternate;
   pointer-events: none;
 }
 
@@ -556,23 +556,23 @@ button {
   height: 100%;
   object-fit: cover;
   z-index: 1;
-  transform: scale(1.12) translate(calc(var(--wave-shift-x) * 0.55), calc(var(--wave-shift-y) * 0.55));
-  filter: saturate(1.2) contrast(1.08) brightness(0.96);
-  transition: transform 0.2s ease-out, filter 0.2s ease-out;
+  transform: scale(1.02) translate(var(--wave-shift-x, 0px), var(--wave-shift-y, 0px));
+  filter: saturate(1.15) contrast(1.05) brightness(0.97);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
 }
 
 .hero-brand-emblem-wrap {
   position: absolute;
   top: 50%;
   left: 28%;
-  transform: translate(calc(-50% + var(--wave-shift-x) * 1.3), calc(-50% + var(--wave-shift-y) * 1.3)) rotate(var(--wave-rotate));
+  transform: translate(calc(-50% + var(--wave-shift-x, 0px)), calc(-50% + var(--wave-shift-y, 0px)));
   z-index: 5;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 320px;
   height: 320px;
-  transition: transform 0.2s ease-out;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
 }
 
@@ -581,28 +581,25 @@ button {
   inset: -26px;
   background: radial-gradient(circle, rgba(212, 172, 84, 0.68) 0%, rgba(212, 172, 84, 0.28) 52%, transparent 78%);
   border-radius: 50%;
-  animation: auraPulse 4s ease-in-out infinite alternate;
+  animation: auraPulse 6s ease-in-out infinite alternate;
   pointer-events: none;
 }
 
 @keyframes waterBorder {
   0% {
     border-radius: 30% 70% 52% 48% / 38% 49% 51% 62%;
-    transform: translate(var(--wave-shift-x), var(--wave-shift-y)) rotate(var(--wave-rotate)) scale(1);
   }
   50% {
-    border-radius: 58% 42% 55% 45% / 44% 57% 43% 56%;
-    transform: translate(calc(var(--wave-shift-x) * 1.8), calc(var(--wave-shift-y) * 1.8)) rotate(calc(var(--wave-rotate) + 10deg)) scale(1.09);
+    border-radius: 54% 46% 52% 48% / 46% 54% 46% 54%;
   }
   100% {
-    border-radius: 46% 54% 63% 37% / 56% 37% 63% 44%;
-    transform: translate(calc(var(--wave-shift-x) * 1.1), calc(var(--wave-shift-y) * 1.1)) rotate(calc(var(--wave-rotate) - 12deg)) scale(1.12);
+    border-radius: 46% 54% 60% 40% / 52% 42% 58% 48%;
   }
 }
 
 @keyframes auraPulse {
-  0% { transform: scale(0.95); opacity: 0.7; }
-  100% { transform: scale(1.08); opacity: 1; }
+  0% { transform: scale(0.98); opacity: 0.7; }
+  100% { transform: scale(1.03); opacity: 0.95; }
 }
 
 .hero-brand-logo-img {
@@ -610,10 +607,10 @@ button {
   max-width: 90% !important;
   height: auto !important;
   object-fit: contain !important;
-  filter: drop-shadow(0 22px 42px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 34px rgba(212, 172, 84, 0.5));
-  animation: logoGentleFloat 5s ease-in-out infinite alternate;
-  transform: translate(var(--wave-shift-x), var(--wave-shift-y)) rotate(var(--wave-rotate));
-  transition: transform 0.2s ease-out, filter 0.2s ease-out;
+  filter: drop-shadow(0 18px 32px rgba(0, 0, 0, 0.25)) drop-shadow(0 0 24px rgba(212, 172, 84, 0.4));
+  animation: logoGentleFloat 6s ease-in-out infinite alternate;
+  transform: translate(var(--wave-shift-x, 0px), var(--wave-shift-y, 0px));
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes logoGentleFloat {
@@ -4023,3 +4020,117 @@ button {
     transform: none !important;
   }
 }
+
+/* ==========================================================================
+   GLOBAL MOTION REFINEMENT — LUXURY CALM & CONTROLLED INTERACTION SYSTEM
+   ========================================================================== */
+
+/* 1. Global Image Hover Limits (Max 3% / 1.03 scale) */
+img {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
+}
+
+.hero-slide-img:hover,
+.about-hero-cinematic-img:hover,
+.about-story-img:hover,
+.card-img:hover,
+.package-card-img:hover,
+.gallery-img:hover,
+.service-card-img:hover,
+.location-center-img img:hover {
+  transform: scale(1.03) !important;
+}
+
+/* 2. Global Card Hover Lift (Max -3px translateY, zero tilt or 3D rotation) */
+.card,
+.service-card,
+.package-card,
+.feature-card,
+.location-card,
+.testimonial-card,
+.avs-review-item-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease !important;
+}
+
+.card:hover,
+.service-card:hover,
+.package-card:hover,
+.feature-card:hover,
+.location-card:hover,
+.testimonial-card:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 12px 28px -6px rgba(6, 44, 34, 0.12) !important;
+}
+
+/* 3. Global Button Hover (Smooth background fade, max 2-3px icon move, max 1.01 scale) */
+button,
+.btn,
+.btn-book,
+.btn-book-cta,
+.avs-btn-continue,
+.avs-btn-back,
+.nav-link,
+.cta-button {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+button:hover,
+.btn:hover,
+.btn-book:hover,
+.btn-book-cta:hover,
+.avs-btn-continue:hover {
+  transform: scale(1.01) !important;
+}
+
+/* Button Icon/Arrow subtle shift (2-3px max) */
+button:hover svg,
+.btn:hover svg,
+.btn-book:hover svg,
+.btn-book-cta:hover svg,
+.avs-btn-continue:hover svg,
+.about-story-cta-link:hover svg {
+  transform: translateX(2px) !important;
+}
+
+/* 4. Complete Page & Form Stability (0px movement for text & structural containers) */
+.navbar-luxury,
+.hero-content,
+.hero-text-wrap,
+.about-hero-content-col,
+.about-hero-headline,
+.about-hero-desc,
+.avs-booking-card,
+.avs-booking-form,
+.avs-form-step-card,
+.footer-luxury,
+.section-heading,
+.container {
+  transform: none !important;
+}
+
+/* 5. Mobile & Touch Device Motion Suppression */
+@media (hover: none), (pointer: coarse), (max-width: 991px) {
+  .slide-brand::before,
+  .slide-brand::after,
+  .slide-brand > img,
+  .hero-brand-emblem-wrap,
+  .hero-brand-logo-img,
+  .locations-wave-svg {
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .card:hover,
+  .service-card:hover,
+  .package-card:hover,
+  .feature-card:hover,
+  .location-card:hover,
+  .testimonial-card:hover {
+    transform: none !important;
+  }
+
+  img:hover {
+    transform: none !important;
+  }
+}
+

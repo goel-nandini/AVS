@@ -305,17 +305,18 @@ function App() {
   const overlapMs = 700; // crossfade overlap duration
 
   const handleBrandWave = (event) => {
+    if (window.innerWidth < 992) return;
     const rect = event.currentTarget.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * 100;
     const y = ((event.clientY - rect.top) / rect.height) * 100;
-    const shiftX = (x - 50) * 1.4;
-    const shiftY = (y - 50) * 1.1;
+    const shiftX = ((x - 50) / 50) * 1.5;
+    const shiftY = ((y - 50) / 50) * 1.5;
 
     event.currentTarget.style.setProperty('--pointer-x', `${x}%`);
     event.currentTarget.style.setProperty('--pointer-y', `${y}%`);
-    event.currentTarget.style.setProperty('--wave-shift-x', `${shiftX}px`);
-    event.currentTarget.style.setProperty('--wave-shift-y', `${shiftY}px`);
-    event.currentTarget.style.setProperty('--wave-rotate', `${(x - 50) * 0.4}deg`);
+    event.currentTarget.style.setProperty('--wave-shift-x', `${shiftX.toFixed(2)}px`);
+    event.currentTarget.style.setProperty('--wave-shift-y', `${shiftY.toFixed(2)}px`);
+    event.currentTarget.style.setProperty('--wave-rotate', '0deg');
   };
 
   const resetBrandWave = (event) => {
@@ -331,11 +332,12 @@ function App() {
 
   const handleCenterMouseMove = (event) => {
     if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return;
+    if (window.innerWidth < 992) return;
     const rect = event.currentTarget.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width - 0.5) * 14;
-    const y = ((event.clientY - rect.top) / rect.height - 0.5) * 14;
-    event.currentTarget.style.setProperty('--loc-mouse-x', `${x}px`);
-    event.currentTarget.style.setProperty('--loc-mouse-y', `${y}px`);
+    const x = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+    const y = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+    event.currentTarget.style.setProperty('--loc-mouse-x', `${x.toFixed(2)}px`);
+    event.currentTarget.style.setProperty('--loc-mouse-y', `${y.toFixed(2)}px`);
   };
 
   const handleCenterMouseLeave = (event) => {

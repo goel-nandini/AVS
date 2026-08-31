@@ -12,8 +12,8 @@ dotenv.config({ path: path.join(__dirname, '.env') });
  * Creates and verifies Gmail SMTP transporter
  */
 function getTransporter() {
-  const user = process.env.GMAIL_USER ? process.env.GMAIL_USER.trim() : '';
-  const pass = process.env.GMAIL_APP_PASSWORD ? process.env.GMAIL_APP_PASSWORD.replace(/\s+/g, '') : '';
+  const user = (process.env.GMAIL_USER || 'auravitalstar@gmail.com').trim();
+  const pass = (process.env.GMAIL_APP_PASSWORD || 'cqknfoboepgqhlyw').replace(/\s+/g, '');
 
   if (!user || !pass || pass === 'your_16_char_app_password') {
     return null;

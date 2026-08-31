@@ -182,65 +182,67 @@ export default function BookingPage({ onBackToHome }) {
     setCrmBookings(getBookings());
   }, []);
 
-  // Parallax mouse / scroll movement (Z-Depth Effect)
+  // Parallax mouse / scroll movement (Z-Depth Effect — Ultra-subtle & buttery smooth)
   useEffect(() => {
-    // Respect prefers-reduced-motion
     if (typeof window === 'undefined') return;
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (mediaQuery.matches) return;
 
-    let rafId = null;
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    let targetScrollY = 0;
+    let currentScrollY = 0;
+    let animId = null;
+
+    const lerp = (start, end, factor) => start + (end - start) * factor;
+
+    const animate = () => {
+      currentX = lerp(currentX, targetX, 0.08);
+      currentY = lerp(currentY, targetY, 0.08);
+      currentScrollY = lerp(currentScrollY, targetScrollY, 0.08);
+
+      // LAYER 02 — Atmospheric Light Pools (max 1.5px)
+      if (lightLayerRef.current) {
+        lightLayerRef.current.style.transform = `translate3d(${(currentX * 1.5).toFixed(2)}px, ${(currentY * 1.5).toFixed(2)}px, 0)`;
+      }
+      // LAYER 03 — Botanical Elements (max 2px)
+      if (botanicalLayerRef.current) {
+        botanicalLayerRef.current.style.transform = `translate3d(${(currentX * -2).toFixed(2)}px, ${(currentY * -2).toFixed(2)}px, 0)`;
+      }
+      // LAYER 04 — Depth Image (max 2.5px)
+      if (depthImageRef.current) {
+        depthImageRef.current.style.transform = `translate3d(${(currentX * -2.5).toFixed(2)}px, ${(currentY * -2.5 + currentScrollY * 0.02).toFixed(2)}px, 0) scale(1.01)`;
+      }
+      // LAYER 05 — Foreground Accents (max 2.5px)
+      if (foregroundLayerRef.current) {
+        foregroundLayerRef.current.style.transform = `translate3d(${(currentX * 2.5).toFixed(2)}px, ${(currentY * 2.5).toFixed(2)}px, 0)`;
+      }
+
+      animId = requestAnimationFrame(animate);
+    };
 
     const handleMouseMove = (e) => {
-      if (window.innerWidth < 992) return; // disable intense movement on mobile
-      const { clientX, clientY } = e;
-      const xPercent = (clientX / window.innerWidth - 0.5) * 2; // -1 to 1
-      const yPercent = (clientY / window.innerHeight - 0.5) * 2; // -1 to 1
-
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => {
-        // LAYER 02 — Atmospheric Light Pools (slow drift)
-        if (lightLayerRef.current) {
-          lightLayerRef.current.style.transform = `translate3d(${xPercent * 8}px, ${yPercent * 8}px, 0)`;
-        }
-        // LAYER 03 — Botanical Elements (distinct movement)
-        if (botanicalLayerRef.current) {
-          botanicalLayerRef.current.style.transform = `translate3d(${xPercent * -14}px, ${yPercent * -14}px, 0)`;
-        }
-        // LAYER 04 — Depth Image (very subtle background shift)
-        if (depthImageRef.current) {
-          depthImageRef.current.style.transform = `translate3d(${xPercent * -5}px, ${yPercent * -5}px, 0) scale(1.02)`;
-        }
-        // LAYER 05 — Foreground Accents (gentle float)
-        if (foregroundLayerRef.current) {
-          foregroundLayerRef.current.style.transform = `translate3d(${xPercent * 20}px, ${yPercent * 20}px, 0)`;
-        }
-      });
+      if (window.innerWidth < 992) return;
+      const xPercent = (e.clientX / window.innerWidth - 0.5) * 2; // -1 to 1
+      const yPercent = (e.clientY / window.innerHeight - 0.5) * 2; // -1 to 1
+      targetX = xPercent;
+      targetY = yPercent;
     };
 
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => {
-        if (depthImageRef.current) {
-          depthImageRef.current.style.transform = `translate3d(0, ${scrollY * 0.04}px, 0)`;
-        }
-        if (botanicalLayerRef.current) {
-          botanicalLayerRef.current.style.transform = `translate3d(0, ${scrollY * -0.07}px, 0)`;
-        }
-        if (foregroundLayerRef.current) {
-          foregroundLayerRef.current.style.transform = `translate3d(0, ${scrollY * -0.12}px, 0)`;
-        }
-      });
+      targetScrollY = Math.min(window.scrollY, 250);
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('scroll', handleScroll, { passive: true });
+    animId = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('scroll', handleScroll);
-      if (rafId) cancelAnimationFrame(rafId);
+      if (animId) cancelAnimationFrame(animId);
     };
   }, []);
 
