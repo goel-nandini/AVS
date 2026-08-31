@@ -9,8 +9,6 @@ const announceItems = [
 
 const navLinks = [
   { href: '#home', label: 'HOME' },
-  { href: '#salon', label: 'SALON' },
-  { href: '#rmt', label: 'RMT' },
   { href: '#services', label: 'SERVICES' },
   { href: '#packages', label: 'PACKAGES' },
   { href: '#about', label: 'ABOUT AVS' },
