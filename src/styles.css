@@ -509,7 +509,10 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
 }
 
@@ -537,8 +540,12 @@ button {
   pointer-events: none;
 }
 
-.slide-brand img {
-  position: relative;
+.slide-brand > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   z-index: 1;
   transform: scale(1.12) translate(calc(var(--wave-shift-x) * 0.55), calc(var(--wave-shift-y) * 0.55));
   filter: saturate(1.2) contrast(1.08) brightness(0.96);
@@ -591,6 +598,7 @@ button {
 
 .hero-brand-logo-img {
   width: 280px !important;
+  max-width: 90% !important;
   height: auto !important;
   object-fit: contain !important;
   filter: drop-shadow(0 22px 42px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 34px rgba(212, 172, 84, 0.5));
