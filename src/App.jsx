@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import PackagesPage from './PackagesPage';
 import AboutPage from './AboutPage';
+import BookingPage from './BookingPage';
 
 const announceItems = [
   '⭐ New Client Offer: Get 15% Off on Your First Visit',
@@ -190,8 +191,20 @@ function App() {
   const [currentPage, setCurrentPage] = useState(() => {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash;
+      const pathname = window.location.pathname;
+      const search = window.location.search;
       if (hash === '#packages' || hash === '#/packages') return 'packages';
       if (hash === '#about' || hash === '#/about') return 'about';
+      if (
+        hash === '#booking' ||
+        hash === '#/booking' ||
+        hash.includes('#booking') ||
+        pathname.includes('/booking') ||
+        search.includes('source=qr') ||
+        search.includes('page=booking')
+      ) {
+        return 'booking';
+      }
     }
     return 'home';
   });
@@ -217,6 +230,11 @@ function App() {
       window.location.hash = '#about';
       setCurrentPage('about');
       window.scrollTo({ top: 0, behavior: 'instant' });
+    } else if (href === '#booking') {
+      if (e) e.preventDefault();
+      window.location.hash = '#booking';
+      setCurrentPage('booking');
+      window.scrollTo({ top: 0, behavior: 'instant' });
     } else if (currentPageRef.current !== 'home') {
       if (e) e.preventDefault();
       window.location.hash = href;
@@ -236,27 +254,36 @@ function App() {
 
   const handleBookRedirect = (e) => {
     if (e) e.preventDefault();
-    window.location.hash = '#contact';
-    setCurrentPage('home');
+    window.location.hash = '#booking';
+    setCurrentPage('booking');
     const mobileMenu = document.getElementById('mobile-menu');
     if (mobileMenu) {
       mobileMenu.classList.remove('open');
       document.body.style.overflow = '';
     }
-    setTimeout(() => {
-      const contactSec = document.getElementById('contact');
-      if (contactSec) contactSec.scrollIntoView({ behavior: 'smooth' });
-    }, 60);
+    window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
+      const pathname = window.location.pathname;
+      const search = window.location.search;
       if (hash === '#packages' || hash === '#/packages') {
         setCurrentPage('packages');
         window.scrollTo({ top: 0, behavior: 'instant' });
       } else if (hash === '#about' || hash === '#/about') {
         setCurrentPage('about');
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      } else if (
+        hash === '#booking' ||
+        hash === '#/booking' ||
+        hash.includes('#booking') ||
+        pathname.includes('/booking') ||
+        search.includes('source=qr') ||
+        search.includes('page=booking')
+      ) {
+        setCurrentPage('booking');
         window.scrollTo({ top: 0, behavior: 'instant' });
       } else {
         setCurrentPage('home');
@@ -604,12 +631,10 @@ function App() {
             })}
           </ul>
           <a
-            href="#contact"
+            href="#booking"
             onClick={(e) => {
-              if (currentPage !== 'home') {
-                e.preventDefault();
-                handleBookRedirect(e);
-              }
+              e.preventDefault();
+              handleBookRedirect(e);
             }}
             className="btn-book"
             id="nav-book-btn"
@@ -643,12 +668,10 @@ function App() {
             ))}
           </ul>
           <a
-            href="#contact"
+            href="#booking"
             onClick={(e) => {
-              if (currentPage !== 'home') {
-                e.preventDefault();
-                handleBookRedirect(e);
-              }
+              e.preventDefault();
+              handleBookRedirect(e);
             }}
             className="btn-book mobile-book"
           >
@@ -657,7 +680,15 @@ function App() {
         </nav>
       </div>
 
-      {currentPage === 'packages' ? (
+      {currentPage === 'booking' ? (
+        <BookingPage
+          onBackToHome={() => {
+            window.location.hash = '#home';
+            setCurrentPage('home');
+            window.scrollTo({ top: 0, behavior: 'instant' });
+          }}
+        />
+      ) : currentPage === 'packages' ? (
         <PackagesPage onBookClick={handleBookRedirect} />
       ) : currentPage === 'about' ? (
         <AboutPage onBookClick={handleBookRedirect} />
@@ -695,7 +726,12 @@ function App() {
               <span>Explore AVS</span>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </a>
-            <a href="#contact" className="btn-secondary" id="hero-book-btn">
+            <a
+              href="#booking"
+              onClick={handleBookRedirect}
+              className="btn-secondary"
+              id="hero-book-btn"
+            >
               <span>Book an Appointment</span>
             </a>
           </div>
@@ -867,7 +903,12 @@ function App() {
             <p className="section-eyebrow section-eyebrow--light reveal-up">The AVS Promise</p>
             <h2 className="promise-heading reveal-up" id="promise-heading">Your Wellness Is Our Priority.</h2>
             <p className="promise-body reveal-up">Experience the perfect blend of luxury, care and personalized solutions designed to help you look, feel and move better every day.</p>
-            <a href="#contact" className="btn-primary btn-gold reveal-up" id="promise-book-btn">
+            <a
+              href="#booking"
+              onClick={handleBookRedirect}
+              className="btn-primary btn-gold reveal-up"
+              id="promise-book-btn"
+            >
               <span>Book Your Appointment</span>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </a>
@@ -906,7 +947,14 @@ function App() {
             <p className="footer-cta-sub">Discover a more personalized approach to wellness.</p>
           </div>
           <div className="footer-cta-form-wrap">
-            <form className="cta-form" id="cta-form">
+            <form
+              className="cta-form"
+              id="cta-form"
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleBookRedirect(e);
+              }}
+            >
               <div className="cta-inputs-row">
                 <input type="text" className="cta-input" id="cta-name" placeholder="Your Name" autoComplete="name" />
                 <input type="tel" className="cta-input" id="cta-phone" placeholder="Phone Number" autoComplete="tel" />
