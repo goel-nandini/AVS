@@ -86,7 +86,7 @@ button {
   height: var(--ann-h);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 0 24px;
   position: relative;
   z-index: 1001;

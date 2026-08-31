@@ -380,14 +380,6 @@ function App() {
       </div>
 
       <div className="announce-bar" id="announce-bar">
-        <button
-          className="announce-arrow announce-prev"
-          id="ann-prev"
-          aria-label="Previous offer"
-          onClick={() => setAnnounceIndex((prev) => (prev - 1 + announceItems.length) % announceItems.length)}
-        >
-          &#8249;
-        </button>
         <div className="announce-track-wrap">
           <div className="announce-track" id="announce-track" aria-live="polite" role="status">
             {announceItems.map((item, index) => (
@@ -399,14 +391,6 @@ function App() {
                 ))}
           </div>
         </div>
-        <button
-          className="announce-arrow announce-next"
-          id="ann-next"
-          aria-label="Next offer"
-          onClick={() => setAnnounceIndex((prev) => (prev + 1) % announceItems.length)}
-        >
-          &#8250;
-        </button>
       </div>
 
       <nav id="navbar" role="navigation" aria-label="Main navigation">
