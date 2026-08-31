@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '.env') });
 
 /**
- * Creates and verifies Gmail SMTP transporter
+ * Creates and verifies Gmail SMTP transporter with robust timeout options
  */
 function getTransporter() {
   const user = (process.env.GMAIL_USER || 'auravitalstar@gmail.com').trim();
@@ -21,8 +21,88 @@ function getTransporter() {
 
   return nodemailer.createTransport({
     service: 'gmail',
-    auth: { user, pass }
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, // TLS via STARTTLS
+    auth: { user, pass },
+    tls: {
+      rejectUnauthorized: false
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000
   });
+}
+
+/**
+ * Dispatches an OTP verification code email to a user
+ */
+export async function sendOtpEmail(email, name = 'Valued Guest', otp) {
+  const transporter = getTransporter();
+  const gmailUser = process.env.GMAIL_USER || 'auravitalstar@gmail.com';
+
+  if (!transporter) {
+    return {
+      success: false,
+      reason: 'Credentials not configured. Please add GMAIL_USER and GMAIL_APP_PASSWORD to server/.env'
+    };
+  }
+
+  const otpCode = otp || Math.floor(100000 + Math.random() * 900000).toString();
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #F7F3EC; margin: 0; padding: 24px; color: #1E2421; }
+        .card { max-width: 540px; margin: 0 auto; background: #FFFFFF; border-radius: 12px; border: 1px solid #E0D9CB; overflow: hidden; box-shadow: 0 8px 24px rgba(6,44,34,0.08); }
+        .header { background: #062C22; color: #FAF5EA; padding: 28px 24px; text-align: center; border-bottom: 2px solid #B9975B; }
+        .header h1 { font-family: Georgia, serif; margin: 0 0 4px 0; font-size: 24px; color: #FAF5EA; }
+        .header p { margin: 0; color: #DFBE77; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }
+        .content { padding: 28px; line-height: 1.6; text-align: center; }
+        .otp-badge { background: #062C22; color: #DFBE77; border: 1px solid #B9975B; padding: 18px 32px; border-radius: 10px; font-size: 32px; font-weight: 800; letter-spacing: 0.3em; display: inline-block; margin: 22px 0; }
+        .footer { background: #F6F1E8; padding: 16px 24px; font-size: 12px; color: #68706B; text-align: center; border-top: 1px solid #E8DCBE; }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <div class="header">
+          <p>AURA VITAL STAR</p>
+          <h1>Verification OTP</h1>
+        </div>
+        <div class="content">
+          <p>Dear <strong>${name}</strong>,</p>
+          <p>Here is your 6-digit One-Time Password (OTP) to complete your email registration:</p>
+          
+          <div class="otp-badge">${otpCode}</div>
+
+          <p style="font-size: 13px; color: #68706B;">This OTP is valid for 10 minutes. Please do not share this code with anyone.</p>
+          
+          <p style="margin-top: 24px; color: #062C22; font-weight: 600; text-align: left;">Warm regards,<br>The Aura Vital Star Team</p>
+        </div>
+        <div class="footer">
+          157 Queen Street West, Brampton, ON L6Y 1P9 &bull; <a href="https://www.auravitalstar.ca" style="color: #B9975B; text-decoration: none;">www.auravitalstar.ca</a>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: `"Aura Vital Star Concierge" <${gmailUser}>`,
+      to: email,
+      subject: `Your Aura Vital Star Verification OTP: ${otpCode}`,
+      html: htmlContent
+    });
+    console.log(`✅ OTP email sent to: ${email}`);
+    return { success: true, otp: otpCode };
+  } catch (err) {
+    console.error('❌ Failed to dispatch OTP email:', err);
+    return { success: false, error: err.message };
+  }
 }
 
 /**
@@ -41,6 +121,8 @@ export async function sendBookingEmails(booking) {
     };
   }
 
+  const otpCode = booking.otp || Math.floor(100000 + Math.random() * 900000).toString();
+
   const customerHtml = `
     <!DOCTYPE html>
     <html>
@@ -53,6 +135,7 @@ export async function sendBookingEmails(booking) {
         .header h1 { font-family: Georgia, serif; margin: 0 0 6px 0; font-size: 26px; color: #FAF5EA; }
         .header p { margin: 0; color: #DFBE77; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; }
         .content { padding: 32px 28px; line-height: 1.6; }
+        .otp-badge { background: #062C22; color: #DFBE77; border: 1px solid #B9975B; padding: 16px 28px; border-radius: 8px; font-size: 28px; font-weight: 700; letter-spacing: 0.25em; text-align: center; margin: 20px 0; display: block; }
         .recap-box { background: #FAF7F2; border: 1px solid #E2D9CB; border-radius: 8px; padding: 20px; margin: 20px 0; }
         .recap-row { margin: 8px 0; font-size: 15px; }
         .recap-label { font-weight: 600; color: #062C22; display: inline-block; width: 110px; }
@@ -63,12 +146,14 @@ export async function sendBookingEmails(booking) {
       <div class="card">
         <div class="header">
           <p>AURA VITAL STAR</p>
-          <h1>Appointment Confirmation</h1>
+          <h1>Registration &amp; Appointment Confirmation</h1>
         </div>
         <div class="content">
           <p>Dear <strong>${booking.customerName}</strong>,</p>
-          <p>Thank you for choosing Aura Vital Star. We are pleased to confirm that your appointment request has been received and scheduled in our concierge system.</p>
+          <p>Thank you for choosing Aura Vital Star. Your email registration verification code is below:</p>
           
+          <div class="otp-badge">${otpCode}</div>
+
           <div class="recap-box">
             <div class="recap-row"><span class="recap-label">Reference:</span> <strong>${booking.id}</strong></div>
             <div class="recap-row"><span class="recap-label">Service:</span> ${booking.service} (${booking.duration || '60 min'})</div>
@@ -99,6 +184,7 @@ export async function sendBookingEmails(booking) {
         <p>A new appointment has been requested through the website/QR booking portal:</p>
         <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
           <tr><td style="padding: 6px; font-weight: bold; width: 140px;">Booking ID:</td><td>${booking.id}</td></tr>
+          <tr><td style="padding: 6px; font-weight: bold;">OTP Code:</td><td><strong>${otpCode}</strong></td></tr>
           <tr><td style="padding: 6px; font-weight: bold;">Customer Name:</td><td>${booking.customerName}</td></tr>
           <tr><td style="padding: 6px; font-weight: bold;">Phone:</td><td><a href="tel:${booking.phone}">${booking.phone}</a></td></tr>
           <tr><td style="padding: 6px; font-weight: bold;">Email:</td><td><a href="mailto:${booking.email}">${booking.email}</a></td></tr>
@@ -120,7 +206,7 @@ export async function sendBookingEmails(booking) {
       await transporter.sendMail({
         from: `"Aura Vital Star Rejuvenation" <${gmailUser}>`,
         to: booking.email,
-        subject: `Your Aura Vital Star Appointment Confirmation [${booking.id}]`,
+        subject: `Your Aura Vital Star Verification OTP: ${otpCode} [${booking.id}]`,
         html: customerHtml
       });
       console.log(`✅ Customer confirmation email sent to: ${booking.email}`);
@@ -135,9 +221,10 @@ export async function sendBookingEmails(booking) {
     });
     console.log(`✅ Admin notification email sent to: ${adminEmail}`);
 
-    return { success: true };
+    return { success: true, otp: otpCode };
   } catch (err) {
     console.error('❌ Failed to dispatch email via Gmail SMTP:', err);
     return { success: false, error: err.message };
   }
 }
+

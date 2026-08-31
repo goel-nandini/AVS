@@ -88,15 +88,36 @@ export async function syncBookingsFromApi() {
 }
 
 /**
- * Creates and saves a new booking into the database and triggers Gmail confirmation
+ * Sends a 6-digit registration OTP to the provided email
+ */
+export async function sendOtpEmail(email, name = '') {
+  try {
+    const res = await fetch('/api/send-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, name })
+    });
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error('Failed to dispatch OTP request to backend:', err);
+    return { success: false, error: err.message };
+  }
+}
+
+/**
+ * Creates and saves a new booking into the database and triggers Gmail confirmation + OTP
  */
 export async function createBooking(bookingData) {
   const current = getBookings();
+  const otpCode = bookingData.otp || Math.floor(100000 + Math.random() * 900000).toString();
+
   const newBooking = {
     id: generateBookingId(),
     customerName: bookingData.name || bookingData.customerName || 'Valued Guest',
     phone: bookingData.phone || '',
     email: bookingData.email || '',
+    otp: otpCode,
     location: bookingData.location || 'Brampton Rejuvenation Centre',
     service: bookingData.service || 'AVS Signature Treatment',
     serviceCategory: bookingData.serviceCategory || 'General Wellness',
@@ -116,7 +137,7 @@ export async function createBooking(bookingData) {
     console.error('Failed to save booking to CRM:', err);
   }
 
-  // Send to backend database and trigger real email
+  // Send to backend database and trigger real email + OTP
   try {
     const res = await fetch('/api/bookings', {
       method: 'POST',
@@ -126,6 +147,12 @@ export async function createBooking(bookingData) {
     if (res.ok) {
       const data = await res.json();
       console.log('✅ Booking saved in database & email sent:', data);
+      if (data.otp) {
+        newBooking.otp = data.otp;
+      }
+    } else {
+      const errText = await res.text();
+      console.warn('Backend returned error status:', res.status, errText);
     }
   } catch (err) {
     console.warn('Backend API not reachable; saved locally:', err);

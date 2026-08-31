@@ -7,10 +7,19 @@ const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || GMAIL_USER).trim();
 function getTransporter() {
   return nodemailer.createTransport({
     service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, // TLS via STARTTLS for high serverless compatibility
     auth: {
       user: GMAIL_USER,
       pass: GMAIL_PASS
-    }
+    },
+    tls: {
+      rejectUnauthorized: false
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000
   });
 }
 
@@ -31,7 +40,7 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     return res.status(200).json({
       status: 'ok',
-      service: 'Aura Vital Star Serverless Booking API',
+      service: 'Aura Vital Star Serverless Booking & Email API',
       configuredGmail: GMAIL_USER
     });
   }
@@ -47,10 +56,14 @@ export default async function handler(req, res) {
     const bookingId = booking.id || `AVS-${year}-${randomNum}`;
     const customerName = booking.customerName || booking.name || 'Valued Guest';
 
+    // Generate 6-Digit Verification OTP for Email Registration/Booking
+    const otpCode = booking.otp || Math.floor(100000 + Math.random() * 900000).toString();
+
     const fullBooking = {
       ...booking,
       id: bookingId,
       customerName,
+      otp: otpCode,
       createdAt: new Date().toISOString(),
       status: 'PENDING'
     };
@@ -67,6 +80,7 @@ export default async function handler(req, res) {
           .header h1 { font-family: Georgia, serif; margin: 0 0 6px 0; font-size: 26px; color: #FAF5EA; }
           .header p { margin: 0; color: #DFBE77; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; }
           .content { padding: 32px 28px; line-height: 1.6; }
+          .otp-badge { background: #062C22; color: #DFBE77; border: 1px solid #B9975B; padding: 16px 28px; border-radius: 8px; font-size: 28px; font-weight: 700; letter-spacing: 0.25em; text-align: center; margin: 20px 0; display: block; }
           .recap-box { background: #FAF7F2; border: 1px solid #E2D9CB; border-radius: 8px; padding: 20px; margin: 20px 0; }
           .recap-row { margin: 8px 0; font-size: 15px; }
           .recap-label { font-weight: 600; color: #062C22; display: inline-block; width: 110px; }
@@ -77,11 +91,15 @@ export default async function handler(req, res) {
         <div class="card">
           <div class="header">
             <p>AURA VITAL STAR</p>
-            <h1>Appointment Confirmation</h1>
+            <h1>Registration &amp; Appointment Confirmation</h1>
           </div>
           <div class="content">
             <p>Dear <strong>${customerName}</strong>,</p>
-            <p>Thank you for choosing Aura Vital Star. We are pleased to confirm that your appointment request has been received and scheduled in our concierge system.</p>
+            <p>Thank you for choosing Aura Vital Star. Your email registration verification code is below:</p>
+            
+            <div class="otp-badge">${otpCode}</div>
+
+            <p style="font-size: 13px; color: #666; text-align: center;">Use this OTP code to verify your email registration. If you did not request this code, please ignore this email.</p>
             
             <div class="recap-box">
               <div class="recap-row"><span class="recap-label">Reference:</span> <strong>${fullBooking.id}</strong></div>
@@ -109,10 +127,11 @@ export default async function handler(req, res) {
       <html>
       <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
         <div style="max-width: 600px; margin: 0 auto; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 24px;">
-          <h2 style="color: #062C22; margin-top: 0;">✨ New Appointment Received — Aura Vital Star</h2>
-          <p>A new appointment has been requested through the live website / QR booking portal:</p>
+          <h2 style="color: #062C22; margin-top: 0;">✨ New Registration &amp; Appointment Received — Aura Vital Star</h2>
+          <p>A new appointment has been registered through the live website / QR portal:</p>
           <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
             <tr><td style="padding: 6px; font-weight: bold; width: 140px;">Booking ID:</td><td>${fullBooking.id}</td></tr>
+            <tr><td style="padding: 6px; font-weight: bold;">OTP Code:</td><td><strong>${otpCode}</strong></td></tr>
             <tr><td style="padding: 6px; font-weight: bold;">Customer Name:</td><td>${customerName}</td></tr>
             <tr><td style="padding: 6px; font-weight: bold;">Phone:</td><td><a href="tel:${fullBooking.phone}">${fullBooking.phone}</a></td></tr>
             <tr><td style="padding: 6px; font-weight: bold;">Email:</td><td><a href="mailto:${fullBooking.email}">${fullBooking.email}</a></td></tr>
@@ -129,29 +148,43 @@ export default async function handler(req, res) {
     `;
 
     const transporter = getTransporter();
+    let emailSent = false;
+    let emailError = null;
 
-    // 1. Send confirmation to customer (if email provided)
+    // 1. Send confirmation + OTP to customer (if email provided)
     if (fullBooking.email) {
-      await transporter.sendMail({
-        from: `"Aura Vital Star Rejuvenation" <${GMAIL_USER}>`,
-        to: fullBooking.email,
-        subject: `Your Aura Vital Star Appointment Confirmation [${fullBooking.id}]`,
-        html: customerHtml
-      });
+      try {
+        await transporter.sendMail({
+          from: `"Aura Vital Star Rejuvenation" <${GMAIL_USER}>`,
+          to: fullBooking.email,
+          subject: `Your Aura Vital Star Verification OTP: ${otpCode} [${fullBooking.id}]`,
+          html: customerHtml
+        });
+        emailSent = true;
+      } catch (err) {
+        console.error('Customer email delivery error:', err);
+        emailError = err.message;
+      }
     }
 
     // 2. Send alert to Admin
-    await transporter.sendMail({
-      from: `"AVS Booking Engine" <${GMAIL_USER}>`,
-      to: ADMIN_EMAIL,
-      subject: `NEW APPOINTMENT: ${customerName} - ${fullBooking.service} [${fullBooking.id}]`,
-      html: adminHtml
-    });
+    try {
+      await transporter.sendMail({
+        from: `"AVS Booking Engine" <${GMAIL_USER}>`,
+        to: ADMIN_EMAIL,
+        subject: `NEW APPOINTMENT: ${customerName} - ${fullBooking.service} [${fullBooking.id}]`,
+        html: adminHtml
+      });
+    } catch (adminErr) {
+      console.warn('Admin notification email warning:', adminErr.message);
+    }
 
     return res.status(200).json({
       success: true,
       booking: fullBooking,
-      emailSent: true
+      otp: otpCode,
+      emailSent,
+      emailError
     });
   } catch (err) {
     console.error('Serverless email dispatch error:', err);
@@ -161,3 +194,4 @@ export default async function handler(req, res) {
     });
   }
 }
+

@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { getAllBookings, insertBooking, updateStatus } from './db.js';
-import { sendBookingEmails } from './email.js';
+import { sendBookingEmails, sendOtpEmail } from './email.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,6 +33,21 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// POST /api/send-otp — Dispatch OTP to email
+app.post('/api/send-otp', async (req, res) => {
+  const { email, name } = req.body || {};
+  if (!email || !email.includes('@')) {
+    return res.status(400).json({ success: false, error: 'Valid email is required' });
+  }
+
+  const result = await sendOtpEmail(email, name);
+  if (result.success) {
+    return res.json({ success: true, message: 'OTP sent successfully', otp: result.otp });
+  } else {
+    return res.status(500).json({ success: false, error: result.error || result.reason });
+  }
+});
+
 // GET all stored bookings
 app.get('/api/bookings', (req, res) => {
   try {
@@ -56,7 +71,7 @@ app.post('/api/bookings', async (req, res) => {
     const savedRecord = insertBooking(bookingData);
     console.log(`📝 Stored booking ${savedRecord.id} for ${savedRecord.customerName} in database.`);
 
-    // 2. Dispatch real confirmation email via Gmail SMTP
+    // 2. Dispatch real confirmation email + OTP via Gmail SMTP
     let emailResult = { success: false, reason: 'Pending' };
     try {
       emailResult = await sendBookingEmails(savedRecord);
@@ -99,3 +114,4 @@ app.listen(PORT, () => {
   console.log(`✨ AVS Booking Server & Database running on http://localhost:${PORT}`);
   console.log(`📧 Gmail notifications: ${process.env.GMAIL_USER || 'Add credentials to server/.env'}`);
 });
+
