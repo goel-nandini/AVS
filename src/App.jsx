@@ -227,6 +227,20 @@ function App() {
     event.currentTarget.style.setProperty('--loc-mouse-y', '0px');
   };
 
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterStatus, setNewsletterStatus] = useState(null);
+
+  const handleNewsletterSubmit = (e) => {
+    e.preventDefault();
+    if (!newsletterEmail || !newsletterEmail.includes('@')) {
+      setNewsletterStatus({ ok: false, msg: 'Please enter a valid email address.' });
+      return;
+    }
+    setNewsletterStatus({ ok: true, msg: 'Thank you for subscribing to wellness updates!' });
+    setNewsletterEmail('');
+    setTimeout(() => setNewsletterStatus(null), 5000);
+  };
+
   useEffect(() => {
     const locSection = locationsRef.current;
     if (!locSection) return;
@@ -743,57 +757,242 @@ function App() {
         </div>
       </section>
 
-      <footer id="contact" className="footer">
-        <div className="footer-inner container">
-          <div className="footer-top">
-            <div className="footer-brand">
-              <img className="footer-logo" src="/logoavs.png" alt="Aura Vital Star logo" />
-              <p className="footer-tagline">Where Wellness Meets Radiance</p>
-              <a href="https://instagram.com/AuraVitalStar" target="_blank" rel="noopener noreferrer" className="footer-social-link">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" strokeWidth="1.5"/><circle cx="12" cy="12" r="4.5" stroke="currentColor" strokeWidth="1.5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
-                @AuraVitalStar
+      <footer id="contact" className="footer-luxury" aria-label="Aura Vital Star Footer">
+        {/* Top gold accent border line */}
+        <div className="footer-top-accent-line" aria-hidden="true"></div>
+
+        {/* Ambient background watermark & waves */}
+        <div className="footer-bg-decor" aria-hidden="true">
+          <div className="footer-watermark">AVS</div>
+          <svg className="footer-wave-svg" viewBox="0 0 1440 360" fill="none" preserveAspectRatio="none">
+            <path d="M0,280 C320,240 540,320 860,260 C1140,210 1320,290 1440,240" stroke="rgba(197, 154, 63, 0.16)" strokeWidth="1.2"/>
+            <path d="M0,310 C340,270 600,340 920,280 C1200,230 1360,300 1440,270" stroke="rgba(197, 154, 63, 0.11)" strokeWidth="1"/>
+            <path d="M0,250 C280,220 480,290 780,240 C1060,195 1280,260 1440,210" stroke="rgba(197, 154, 63, 0.08)" strokeWidth="0.8"/>
+            <path d="M200,330 C450,290 700,360 1050,300 C1260,260 1380,310 1440,295" stroke="rgba(16, 44, 34, 0.035)" strokeWidth="1"/>
+          </svg>
+          <div className="footer-particles">
+            {[...Array(6)].map((_, i) => (
+              <span key={i} className={`footer-particle fp-${i + 1}`}></span>
+            ))}
+          </div>
+        </div>
+
+        <div className="footer-luxury-inner">
+          <div className="footer-columns-grid">
+            {/* Column 1: Brand */}
+            <div className="footer-col footer-col-brand">
+              <a href="#hero" className="footer-brand-logo-link" aria-label="Aura Vital Star Home">
+                <img className="footer-luxury-logo" src="/logoavs.png" alt="Aura Vital Star logo" />
               </a>
+              <h3 className="footer-brand-tagline">
+                Where Wellness<br />Meets Radiance
+              </h3>
+              <div className="footer-lotus-divider" aria-hidden="true">
+                <span className="divider-gold-line"></span>
+                <svg className="divider-lotus-svg" viewBox="0 0 32 20" width="22" height="14" fill="none">
+                  <path d="M16 2 C16 2 11 7 11 12 C11 15 13 17 16 18 C19 17 21 15 21 12 C21 7 16 2 16 2Z" fill="#C49A3C" opacity="0.9"/>
+                  <path d="M11 7 C8 6 5 8 4 11 C5 14 7 15 11 15" stroke="#C49A3C" strokeWidth="1.2" strokeLinecap="round"/>
+                  <path d="M21 7 C24 6 27 8 28 11 C27 14 25 15 21 15" stroke="#C49A3C" strokeWidth="1.2" strokeLinecap="round"/>
+                </svg>
+                <span className="divider-gold-line"></span>
+              </div>
+              <p className="footer-brand-desc">
+                Rejuvenate your mind, body, and soul with our premium wellness solutions.
+              </p>
+              <div className="footer-social-wrap">
+                <span className="footer-social-title">Follow Us</span>
+                <div className="footer-social-icons">
+                  <a
+                    href="https://instagram.com/AuraVitalStar"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="footer-social-btn"
+                    aria-label="Follow Aura Vital Star on Instagram"
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" strokeWidth="1.7"/>
+                      <circle cx="12" cy="12" r="4.5" stroke="currentColor" strokeWidth="1.7"/>
+                      <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/>
+                    </svg>
+                  </a>
+                  <a
+                    href="https://facebook.com/AuraVitalStar"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="footer-social-btn"
+                    aria-label="Follow Aura Vital Star on Facebook"
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </a>
+                  <a
+                    href="#packages"
+                    className="footer-social-btn"
+                    aria-label="Aura Vital Star Wellness Experiences"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 3 C12 3 8 7 8 12 C8 15 10 17 12 18 C14 17 16 15 16 12 C16 7 12 3 12 3Z" fill="currentColor" opacity="0.9"/>
+                      <path d="M8 8 C5 7 2 9 2 12 C3 15 6 16 9 16" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                      <path d="M16 8 C19 7 22 9 22 12 C21 15 18 16 15 16" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
             </div>
-            <div className="footer-nav-group">
-              <h4>Navigate</h4>
-              <ul role="list">
-                <li><a href="#salon">Salon &amp; Wellness</a></li>
-                <li><a href="#orthotics">Orthotics</a></li>
-                <li><a href="#about">About AVS</a></li>
-                <li><a href="#packages">Packages</a></li>
-                <li><a href="#blog">Blog</a></li>
-                <li><a href="#contact">Contact</a></li>
+
+            {/* Column 2: Navigate */}
+            <div className="footer-col footer-col-nav">
+              <h4 className="footer-heading">Navigate</h4>
+              <div className="footer-heading-bar" aria-hidden="true"></div>
+              <ul className="footer-nav-list" role="list">
+                <li>
+                  <a href="#salon" className="footer-nav-item">
+                    <span>Salon &amp; Wellness</span>
+                    <span className="footer-nav-arrow" aria-hidden="true">&#8250;</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#orthotics" className="footer-nav-item">
+                    <span>Orthotics</span>
+                    <span className="footer-nav-arrow" aria-hidden="true">&#8250;</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#about" className="footer-nav-item">
+                    <span>About AVS</span>
+                    <span className="footer-nav-arrow" aria-hidden="true">&#8250;</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#packages" className="footer-nav-item">
+                    <span>Packages</span>
+                    <span className="footer-nav-arrow" aria-hidden="true">&#8250;</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#blog" className="footer-nav-item">
+                    <span>Blog</span>
+                    <span className="footer-nav-arrow" aria-hidden="true">&#8250;</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#contact" className="footer-nav-item">
+                    <span>Contact</span>
+                    <span className="footer-nav-arrow" aria-hidden="true">&#8250;</span>
+                  </a>
+                </li>
               </ul>
             </div>
-            <div className="footer-contact-group">
-              <h4>Contact</h4>
-              <address>
-                <p>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  <a href="tel:+16479875451">+1 647-987-5451</a>
-                </p>
-                <p>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" stroke="currentColor" strokeWidth="1.5"/><circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="1.5"/></svg>
-                  157 Queen Street West,<br />Brampton, ON L6Y 1P9
-                </p>
-                <p>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" strokeWidth="1.5"/><polyline points="22,6 12,13 2,6" stroke="currentColor" strokeWidth="1.5"/></svg>
-                  <a href="mailto:info@auravitalstar.ca">info@auravitalstar.ca</a>
-                </p>
-                <p>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" stroke="currentColor" strokeWidth="1.5"/></svg>
-                  <a href="http://www.auravitalstar.ca" target="_blank" rel="noopener noreferrer">www.auravitalstar.ca</a>
-                </p>
-              </address>
+
+            {/* Column 3: Contact */}
+            <div className="footer-col footer-col-contact">
+              <h4 className="footer-heading">Contact</h4>
+              <div className="footer-heading-bar" aria-hidden="true"></div>
+              <div className="footer-contact-list">
+                <a href="tel:+16479875451" className="footer-contact-row" aria-label="Call +1 647-987-5451">
+                  <span className="footer-contact-badge" aria-hidden="true">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </span>
+                  <span className="footer-contact-text">+1 647-987-5451</span>
+                </a>
+
+                <a
+                  href="https://maps.google.com/?q=157+Queen+Street+West+Brampton+ON"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="footer-contact-row"
+                  aria-label="Location: 157 Queen Street West, Brampton, ON L6Y 1P9"
+                >
+                  <span className="footer-contact-badge" aria-hidden="true">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" strokeWidth="1.6"/>
+                      <circle cx="12" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.6"/>
+                    </svg>
+                  </span>
+                  <span className="footer-contact-text">
+                    157 Queen Street West,<br />Brampton, ON L6Y 1P9
+                  </span>
+                </a>
+
+                <a href="mailto:info@auravitalstar.ca" className="footer-contact-row" aria-label="Email info@auravitalstar.ca">
+                  <span className="footer-contact-badge" aria-hidden="true">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.6"/>
+                      <path d="m22 6-10 7L2 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </span>
+                  <span className="footer-contact-text">info@auravitalstar.ca</span>
+                </a>
+
+                <a
+                  href="https://www.auravitalstar.ca"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="footer-contact-row"
+                  aria-label="Visit website www.auravitalstar.ca"
+                >
+                  <span className="footer-contact-badge" aria-hidden="true">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.6"/>
+                      <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" strokeWidth="1.6"/>
+                    </svg>
+                  </span>
+                  <span className="footer-contact-text">www.auravitalstar.ca</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Column 4: Stay Connected */}
+            <div className="footer-col footer-col-newsletter">
+              <h4 className="footer-heading">Stay Connected</h4>
+              <div className="footer-heading-bar" aria-hidden="true"></div>
+              <p className="footer-newsletter-desc">
+                Subscribe to get wellness tips, exclusive offers, and updates delivered to your inbox.
+              </p>
+              <form className="footer-newsletter-form" onSubmit={handleNewsletterSubmit} noValidate>
+                <div className="footer-input-pill">
+                  <input
+                    type="email"
+                    className="footer-email-input"
+                    placeholder="Your email address"
+                    value={newsletterEmail}
+                    onChange={(e) => setNewsletterEmail(e.target.value)}
+                    aria-label="Your email address for wellness updates"
+                    required
+                  />
+                  <button type="submit" className="footer-submit-btn" aria-label="Subscribe to newsletter">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
+                {newsletterStatus && (
+                  <p className={`footer-newsletter-status ${newsletterStatus.ok ? 'success' : 'error'}`}>
+                    {newsletterStatus.msg}
+                  </p>
+                )}
+              </form>
+              <div className="footer-privacy-note">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#C49A3C" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span>We respect your privacy.</span>
+              </div>
             </div>
           </div>
-          <div className="footer-divider"></div>
-          <div className="footer-bottom">
-            <p className="footer-copy">&#169; Aura Vital Star Rejuvenation Centre Inc. All Rights Reserved.</p>
-            <div className="footer-legal">
-              <a href="#">Privacy Policy</a>
-              <span> &middot; </span>
-              <a href="#">Terms &amp; Conditions</a>
+
+          {/* Bottom Copyright Bar */}
+          <div className="footer-bottom-bar">
+            <p className="footer-copy-text">
+              &copy; 2025 Aura Vital Star Rejuvenation Centre Inc. All Rights Reserved.
+            </p>
+            <div className="footer-legal-links">
+              <a href="#privacy" className="footer-legal-link">Privacy Policy</a>
+              <span className="footer-legal-sep" aria-hidden="true">|</span>
+              <a href="#terms" className="footer-legal-link">Terms &amp; Conditions</a>
             </div>
           </div>
         </div>
