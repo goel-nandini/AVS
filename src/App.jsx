@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import PackagesPage from './PackagesPage';
+import AboutPage from './AboutPage';
 
 const announceItems = [
   '⭐ New Client Offer: Get 15% Off on Your First Visit',
@@ -10,6 +11,8 @@ const announceItems = [
 
 const navLinks = [
   { href: '#home', label: 'HOME' },
+  { href: '#salon', label: 'SALON' },
+  { href: '#rmt', label: 'RMT' },
   { href: '#services', label: 'SERVICES' },
   { href: '#packages', label: 'PACKAGES' },
   { href: '#about', label: 'ABOUT AVS' },
@@ -188,6 +191,7 @@ function App() {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash;
       if (hash === '#packages' || hash === '#/packages') return 'packages';
+      if (hash === '#about' || hash === '#/about') return 'about';
     }
     return 'home';
   });
@@ -197,25 +201,26 @@ function App() {
   }, [currentPage]);
 
   const handleNavClick = (e, href) => {
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenu) {
+      mobileMenu.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
     if (href === '#packages') {
       if (e) e.preventDefault();
       window.location.hash = '#packages';
       setCurrentPage('packages');
       window.scrollTo({ top: 0, behavior: 'instant' });
-      const mobileMenu = document.getElementById('mobile-menu');
-      if (mobileMenu) {
-        mobileMenu.classList.remove('open');
-        document.body.style.overflow = '';
-      }
-    } else if (currentPageRef.current === 'packages') {
+    } else if (href === '#about') {
+      if (e) e.preventDefault();
+      window.location.hash = '#about';
+      setCurrentPage('about');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    } else if (currentPageRef.current !== 'home') {
       if (e) e.preventDefault();
       window.location.hash = href;
       setCurrentPage('home');
-      const mobileMenu = document.getElementById('mobile-menu');
-      if (mobileMenu) {
-        mobileMenu.classList.remove('open');
-        document.body.style.overflow = '';
-      }
       setTimeout(() => {
         if (href === '#home') {
           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -225,15 +230,11 @@ function App() {
         }
       }, 60);
     } else {
-      const mobileMenu = document.getElementById('mobile-menu');
-      if (mobileMenu) {
-        mobileMenu.classList.remove('open');
-        document.body.style.overflow = '';
-      }
+      // Normal anchor on home page
     }
   };
 
-  const handleBookFromPackages = (e) => {
+  const handleBookRedirect = (e) => {
     if (e) e.preventDefault();
     window.location.hash = '#contact';
     setCurrentPage('home');
@@ -253,6 +254,9 @@ function App() {
       const hash = window.location.hash;
       if (hash === '#packages' || hash === '#/packages') {
         setCurrentPage('packages');
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      } else if (hash === '#about' || hash === '#/about') {
+        setCurrentPage('about');
         window.scrollTo({ top: 0, behavior: 'instant' });
       } else {
         setCurrentPage('home');
@@ -461,6 +465,12 @@ function App() {
         });
         return;
       }
+      if (currentPageRef.current === 'about') {
+        navLinksGroup.forEach((link) => {
+          link.classList.toggle('active', link.getAttribute('href') === '#about');
+        });
+        return;
+      }
       const scrollPos = window.scrollY + 140;
       sections.forEach((sec) => {
         const top = sec.offsetTop;
@@ -534,6 +544,10 @@ function App() {
       navLinksGroup.forEach((link) => {
         link.classList.toggle('active', link.getAttribute('href') === '#packages');
       });
+    } else if (currentPage === 'about') {
+      navLinksGroup.forEach((link) => {
+        link.classList.toggle('active', link.getAttribute('href') === '#about');
+      });
     }
   }, [currentPage]);
 
@@ -573,6 +587,8 @@ function App() {
             {navLinks.map((link) => {
               const isActive = currentPage === 'packages'
                 ? link.href === '#packages'
+                : currentPage === 'about'
+                ? link.href === '#about'
                 : link.href === '#home';
               return (
                 <li key={link.href}>
@@ -590,9 +606,9 @@ function App() {
           <a
             href="#contact"
             onClick={(e) => {
-              if (currentPage === 'packages') {
+              if (currentPage !== 'home') {
                 e.preventDefault();
-                handleBookFromPackages(e);
+                handleBookRedirect(e);
               }
             }}
             className="btn-book"
@@ -629,9 +645,9 @@ function App() {
           <a
             href="#contact"
             onClick={(e) => {
-              if (currentPage === 'packages') {
+              if (currentPage !== 'home') {
                 e.preventDefault();
-                handleBookFromPackages(e);
+                handleBookRedirect(e);
               }
             }}
             className="btn-book mobile-book"
@@ -642,7 +658,9 @@ function App() {
       </div>
 
       {currentPage === 'packages' ? (
-        <PackagesPage onBookClick={handleBookFromPackages} />
+        <PackagesPage onBookClick={handleBookRedirect} />
+      ) : currentPage === 'about' ? (
+        <AboutPage onBookClick={handleBookRedirect} />
       ) : (
         <>
           <section id="home" className="hero" aria-labelledby="hero-heading">
