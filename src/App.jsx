@@ -372,11 +372,9 @@ function App() {
   return (
     <>
       <div id="loader" aria-hidden="true">
-        <div className="loader-sweep"></div>
         <div className="loader-logo">
-          <img className="avs-logo-img" src="/avs_logo.png" alt="Aura Vital Star logo" />
+          <img className="avs-logo-img" src="/logoavs.png" alt="Aura Vital Star logo" />
         </div>
-        <div className="loader-tagline">AURA VITAL STAR</div>
       </div>
 
       <div className="announce-bar" id="announce-bar">
