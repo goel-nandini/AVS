@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import PackagesPage from './PackagesPage';
 
 const announceItems = [
   '⭐ New Client Offer: Get 15% Off on Your First Visit',
@@ -183,6 +184,91 @@ function Icon({ name, width = 28, height = 28 }) {
 }
 
 function App() {
+  const [currentPage, setCurrentPage] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash;
+      if (hash === '#packages' || hash === '#/packages') return 'packages';
+    }
+    return 'home';
+  });
+  const currentPageRef = useRef(currentPage);
+  useEffect(() => {
+    currentPageRef.current = currentPage;
+  }, [currentPage]);
+
+  const handleNavClick = (e, href) => {
+    if (href === '#packages') {
+      if (e) e.preventDefault();
+      window.location.hash = '#packages';
+      setCurrentPage('packages');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (mobileMenu) {
+        mobileMenu.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    } else if (currentPageRef.current === 'packages') {
+      if (e) e.preventDefault();
+      window.location.hash = href;
+      setCurrentPage('home');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (mobileMenu) {
+        mobileMenu.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+      setTimeout(() => {
+        if (href === '#home') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          const target = document.querySelector(href);
+          if (target) target.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 60);
+    } else {
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (mobileMenu) {
+        mobileMenu.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    }
+  };
+
+  const handleBookFromPackages = (e) => {
+    if (e) e.preventDefault();
+    window.location.hash = '#contact';
+    setCurrentPage('home');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenu) {
+      mobileMenu.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    setTimeout(() => {
+      const contactSec = document.getElementById('contact');
+      if (contactSec) contactSec.scrollIntoView({ behavior: 'smooth' });
+    }, 60);
+  };
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash === '#packages' || hash === '#/packages') {
+        setCurrentPage('packages');
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      } else {
+        setCurrentPage('home');
+        if (hash && hash !== '#home') {
+          setTimeout(() => {
+            const target = document.querySelector(hash);
+            if (target) target.scrollIntoView({ behavior: 'smooth' });
+          }, 60);
+        }
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
   const [announceIndex, setAnnounceIndex] = useState(0);
   const [prevAnnounceIndex, setPrevAnnounceIndex] = useState(null);
   const overlapMs = 700; // crossfade overlap duration
@@ -369,6 +455,12 @@ function App() {
 
     const handleScroll = () => {
       if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 40);
+      if (currentPageRef.current === 'packages') {
+        navLinksGroup.forEach((link) => {
+          link.classList.toggle('active', link.getAttribute('href') === '#packages');
+        });
+        return;
+      }
       const scrollPos = window.scrollY + 140;
       sections.forEach((sec) => {
         const top = sec.offsetTop;
@@ -436,6 +528,15 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const navLinksGroup = document.querySelectorAll('.nav-link');
+    if (currentPage === 'packages') {
+      navLinksGroup.forEach((link) => {
+        link.classList.toggle('active', link.getAttribute('href') === '#packages');
+      });
+    }
+  }, [currentPage]);
+
   return (
     <>
       <div id="loader" aria-hidden="true">
@@ -448,31 +549,55 @@ function App() {
         <div className="announce-track-wrap">
           <div className="announce-track" id="announce-track" aria-live="polite" role="status">
             {announceItems.map((item, index) => (
-                  <span
-                    key={item}
-                    className={`announce-item ${index === announceIndex ? 'active' : ''} ${index === prevAnnounceIndex ? 'prev' : ''}`}>
-                    {item}
-                  </span>
-                ))}
+              <span
+                key={item}
+                className={`announce-item ${index === announceIndex ? 'active' : ''} ${index === prevAnnounceIndex ? 'prev' : ''}`}>
+                {item}
+              </span>
+            ))}
           </div>
         </div>
       </div>
 
       <nav id="navbar" role="navigation" aria-label="Main navigation">
         <div className="nav-inner">
-          <a href="#home" className="nav-logo" aria-label="AVS Home">
+          <a
+            href="#home"
+            onClick={(e) => handleNavClick(e, '#home')}
+            className="nav-logo"
+            aria-label="AVS Home"
+          >
             <img className="nav-logo-img" src="/logoavs.png" alt="Aura Vital Star" />
           </a>
           <ul className="nav-links" role="list">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <a href={link.href} className={`nav-link ${link.href === '#home' ? 'active' : ''}`}>
-                  {link.label}
-                </a>
-              </li>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = currentPage === 'packages'
+                ? link.href === '#packages'
+                : link.href === '#home';
+              return (
+                <li key={link.href}>
+                  <a
+                    href={link.href}
+                    onClick={(e) => handleNavClick(e, link.href)}
+                    className={`nav-link ${isActive ? 'active' : ''}`}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              );
+            })}
           </ul>
-          <a href="#contact" className="btn-book" id="nav-book-btn">
+          <a
+            href="#contact"
+            onClick={(e) => {
+              if (currentPage === 'packages') {
+                e.preventDefault();
+                handleBookFromPackages(e);
+              }
+            }}
+            className="btn-book"
+            id="nav-book-btn"
+          >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
               <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.8" />
               <path d="M3 9h18M8 2v4M16 2v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
@@ -491,15 +616,36 @@ function App() {
           <ul role="list">
             {navLinks.map((link) => (
               <li key={link.href + '-mobile'}>
-                <a href={link.href} className="mobile-link">{link.label}</a>
+                <a
+                  href={link.href}
+                  onClick={(e) => handleNavClick(e, link.href)}
+                  className="mobile-link"
+                >
+                  {link.label}
+                </a>
               </li>
             ))}
           </ul>
-          <a href="#contact" className="btn-book mobile-book">BOOK APPOINTMENT</a>
+          <a
+            href="#contact"
+            onClick={(e) => {
+              if (currentPage === 'packages') {
+                e.preventDefault();
+                handleBookFromPackages(e);
+              }
+            }}
+            className="btn-book mobile-book"
+          >
+            BOOK APPOINTMENT
+          </a>
         </nav>
       </div>
 
-      <section id="home" className="hero" aria-labelledby="hero-heading">
+      {currentPage === 'packages' ? (
+        <PackagesPage onBookClick={handleBookFromPackages} />
+      ) : (
+        <>
+          <section id="home" className="hero" aria-labelledby="hero-heading">
         <div className="hero-left">
           <p className="hero-eyebrow reveal-item">Where Wellness Meets Radiance</p>
           <h1 className="hero-heading reveal-item" id="hero-heading">
@@ -623,7 +769,7 @@ function App() {
       <section
         ref={locationsRef}
         className={`locations-section ${locationsVisible ? 'in-view' : ''}`}
-        id="packages"
+        id="locations"
         aria-labelledby="locations-heading"
       >
         <div className="locations-bg-waves" aria-hidden="true">
@@ -756,6 +902,8 @@ function App() {
           </div>
         </div>
       </section>
+        </>
+      )}
 
       <footer id="contact" className="footer-luxury" aria-label="Aura Vital Star Footer">
         {/* Top gold accent border line */}
@@ -781,7 +929,12 @@ function App() {
           <div className="footer-columns-grid">
             {/* Column 1: Brand */}
             <div className="footer-col footer-col-brand">
-              <a href="#hero" className="footer-brand-logo-link" aria-label="Aura Vital Star Home">
+              <a
+                href="#home"
+                onClick={(e) => handleNavClick(e, '#home')}
+                className="footer-brand-logo-link"
+                aria-label="Aura Vital Star Home"
+              >
                 <img className="footer-luxury-logo" src="/logoavs.png" alt="Aura Vital Star logo" />
               </a>
               <h3 className="footer-brand-tagline">
@@ -828,6 +981,7 @@ function App() {
                   </a>
                   <a
                     href="#packages"
+                    onClick={(e) => handleNavClick(e, '#packages')}
                     className="footer-social-btn"
                     aria-label="Aura Vital Star Wellness Experiences"
                   >
@@ -847,37 +1001,61 @@ function App() {
               <div className="footer-heading-bar" aria-hidden="true"></div>
               <ul className="footer-nav-list" role="list">
                 <li>
-                  <a href="#salon" className="footer-nav-item">
+                  <a
+                    href="#services"
+                    onClick={(e) => handleNavClick(e, '#services')}
+                    className="footer-nav-item"
+                  >
                     <span>Salon &amp; Wellness</span>
                     <span className="footer-nav-arrow" aria-hidden="true">&#8250;</span>
                   </a>
                 </li>
                 <li>
-                  <a href="#orthotics" className="footer-nav-item">
+                  <a
+                    href="#services"
+                    onClick={(e) => handleNavClick(e, '#services')}
+                    className="footer-nav-item"
+                  >
                     <span>Orthotics</span>
                     <span className="footer-nav-arrow" aria-hidden="true">&#8250;</span>
                   </a>
                 </li>
                 <li>
-                  <a href="#about" className="footer-nav-item">
+                  <a
+                    href="#about"
+                    onClick={(e) => handleNavClick(e, '#about')}
+                    className="footer-nav-item"
+                  >
                     <span>About AVS</span>
                     <span className="footer-nav-arrow" aria-hidden="true">&#8250;</span>
                   </a>
                 </li>
                 <li>
-                  <a href="#packages" className="footer-nav-item">
+                  <a
+                    href="#packages"
+                    onClick={(e) => handleNavClick(e, '#packages')}
+                    className="footer-nav-item"
+                  >
                     <span>Packages</span>
                     <span className="footer-nav-arrow" aria-hidden="true">&#8250;</span>
                   </a>
                 </li>
                 <li>
-                  <a href="#blog" className="footer-nav-item">
-                    <span>Blog</span>
+                  <a
+                    href="#gallery"
+                    onClick={(e) => handleNavClick(e, '#gallery')}
+                    className="footer-nav-item"
+                  >
+                    <span>Gallery</span>
                     <span className="footer-nav-arrow" aria-hidden="true">&#8250;</span>
                   </a>
                 </li>
                 <li>
-                  <a href="#contact" className="footer-nav-item">
+                  <a
+                    href="#contact"
+                    onClick={(e) => handleNavClick(e, '#contact')}
+                    className="footer-nav-item"
+                  >
                     <span>Contact</span>
                     <span className="footer-nav-arrow" aria-hidden="true">&#8250;</span>
                   </a>
