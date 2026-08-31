@@ -87,19 +87,20 @@ const testimonials = [
 ];
 
 function Icon({ name, width = 28, height = 28 }) {
-  const commonProps = { width, height, viewBox: '0 0 32 32', fill: 'none' };
+  const pillarProps = { width, height, viewBox: '0 0 56 56', fill: 'none' };
+  const serviceProps = { width, height, viewBox: '0 0 32 32', fill: 'none' };
 
   switch (name) {
     case 'check':
       return (
-        <svg {...commonProps}>
+        <svg {...pillarProps}>
           <rect x="4" y="4" width="48" height="48" rx="24" stroke="#c49a3c" strokeWidth="1.4" />
           <path d="M18 28l7 7 13-14" stroke="#c49a3c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       );
     case 'person':
       return (
-        <svg {...commonProps}>
+        <svg {...pillarProps}>
           <rect x="4" y="4" width="48" height="48" rx="24" stroke="#c49a3c" strokeWidth="1.4" />
           <circle cx="28" cy="22" r="6" stroke="#c49a3c" strokeWidth="1.6" />
           <path d="M16 40c0-6.627 5.373-12 12-12s12 5.373 12 12" stroke="#c49a3c" strokeWidth="1.6" strokeLinecap="round" />
@@ -107,7 +108,7 @@ function Icon({ name, width = 28, height = 28 }) {
       );
     case 'heart':
       return (
-        <svg {...commonProps}>
+        <svg {...pillarProps}>
           <rect x="4" y="4" width="48" height="48" rx="24" stroke="#c49a3c" strokeWidth="1.4" />
           <path d="M28 16 C28 16 20 20 20 27 C20 31 23 34 28 35 C33 34 36 31 36 27 C36 20 28 16 28 16Z" stroke="#c49a3c" strokeWidth="1.5" fill="none" strokeLinejoin="round" />
           <path d="M24 27l3 3 6-6" stroke="#c49a3c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -115,7 +116,7 @@ function Icon({ name, width = 28, height = 28 }) {
       );
     case 'shield':
       return (
-        <svg {...commonProps}>
+        <svg {...pillarProps}>
           <rect x="4" y="4" width="48" height="48" rx="24" stroke="#c49a3c" strokeWidth="1.4" />
           <path d="M28 14 C28 14 34 20 34 30 C34 36 31 39 28 40 C25 39 22 36 22 30 C22 20 28 14 28 14Z" stroke="#c49a3c" strokeWidth="1.5" fill="none" strokeLinejoin="round" />
           <path d="M28 26v8" stroke="#c49a3c" strokeWidth="1.5" strokeLinecap="round" />
@@ -123,7 +124,7 @@ function Icon({ name, width = 28, height = 28 }) {
       );
     case 'star':
       return (
-        <svg {...commonProps}>
+        <svg {...pillarProps}>
           <rect x="4" y="4" width="48" height="48" rx="24" stroke="#c49a3c" strokeWidth="1.4" />
           <polygon points="28,16 31,23 39,23 33,28 35,36 28,31 21,36 23,28 17,23 25,23" stroke="#c49a3c" strokeWidth="1.5" fill="none" strokeLinejoin="round" />
         </svg>
