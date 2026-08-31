@@ -8,13 +8,14 @@ const announceItems = [
 ];
 
 const navLinks = [
-  { href: '#home', label: 'Home' },
-  { href: '#salon', label: 'Salon & Wellness' },
-  { href: '#orthotics', label: 'Orthotics' },
-  { href: '#about', label: 'About AVS' },
-  { href: '#packages', label: 'Packages' },
-  { href: '#blog', label: 'Blog' },
-  { href: '#contact', label: 'Contact' }
+  { href: '#home', label: 'HOME' },
+  { href: '#salon', label: 'SALON' },
+  { href: '#rmt', label: 'RMT' },
+  { href: '#services', label: 'SERVICES' },
+  { href: '#packages', label: 'PACKAGES' },
+  { href: '#about', label: 'ABOUT AVS' },
+  { href: '#gallery', label: 'GALLERY' },
+  { href: '#contact', label: 'CONTACT' }
 ];
 
 const heroSlides = [
@@ -478,7 +479,7 @@ function App() {
               <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.8" />
               <path d="M3 9h18M8 2v4M16 2v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
             </svg>
-            Book Appointment
+            BOOK APPOINTMENT
           </a>
           <button className="nav-hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
             <span></span><span></span><span></span>
@@ -496,7 +497,7 @@ function App() {
               </li>
             ))}
           </ul>
-          <a href="#contact" className="btn-book mobile-book">Book Appointment</a>
+          <a href="#contact" className="btn-book mobile-book">BOOK APPOINTMENT</a>
         </nav>
       </div>
 
@@ -585,7 +586,7 @@ function App() {
           </div>
           <div className="why-pillars">
             {whyPillars.map((pillar) => (
-              <div className="why-pillar reveal-up" key={pillar.title}>
+              <div className="why-pillar reveal-up" key={pillar.title} id={pillar.title === 'RMP Certified' ? 'rmt' : undefined}>
                 <div className="why-icon"><Icon name={pillar.icon} width={48} height={48} /></div>
                 <h3 className="why-title">{pillar.title}</h3>
                 <p className="why-desc">{pillar.desc}</p>
@@ -595,7 +596,8 @@ function App() {
         </div>
       </section>
 
-      <section id="salon" className="services-section" aria-labelledby="services-heading">
+      <section id="services" className="services-section" aria-labelledby="services-heading">
+        <span id="salon" className="section-anchor"></span>
         <div className="container">
           <h2 className="services-heading reveal-up" id="services-heading">Our Services</h2>
         </div>
@@ -695,7 +697,7 @@ function App() {
         </div>
       </section>
 
-      <section className="avs-promise" aria-labelledby="promise-heading">
+      <section id="gallery" className="avs-promise" aria-labelledby="promise-heading">
         <div className="promise-bg" style={{ backgroundImage: "url('/promise_bg.jpg')" }}></div>
         <div className="promise-overlay-dark"></div>
         <div className="promise-content">
