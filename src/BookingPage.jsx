@@ -183,82 +183,12 @@ export default function BookingPage({ onBackToHome }) {
   const [crmBookings, setCrmBookings] = useState([]);
   const [showQrModal, setShowQrModal] = useState(false);
 
-  // Parallax ref for Z-Depth background layers
-  const lightLayerRef = useRef(null);
-  const botanicalLayerRef = useRef(null);
-  const depthImageRef = useRef(null);
-  const foregroundLayerRef = useRef(null);
-
   // Initialize booking source & CRM records
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
     const detected = detectBookingSource();
     setBookingSource(detected);
     setCrmBookings(getBookings());
-  }, []);
-
-  // Parallax mouse / scroll movement (Z-Depth Effect — Ultra-subtle & buttery smooth)
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (mediaQuery.matches) return;
-
-    let targetX = 0;
-    let targetY = 0;
-    let currentX = 0;
-    let currentY = 0;
-    let targetScrollY = 0;
-    let currentScrollY = 0;
-    let animId = null;
-
-    const lerp = (start, end, factor) => start + (end - start) * factor;
-
-    const animate = () => {
-      currentX = lerp(currentX, targetX, 0.08);
-      currentY = lerp(currentY, targetY, 0.08);
-      currentScrollY = lerp(currentScrollY, targetScrollY, 0.08);
-
-      // LAYER 02 — Atmospheric Light Pools (max 1.5px)
-      if (lightLayerRef.current) {
-        lightLayerRef.current.style.transform = `translate3d(${(currentX * 1.5).toFixed(2)}px, ${(currentY * 1.5).toFixed(2)}px, 0)`;
-      }
-      // LAYER 03 — Botanical Elements (max 2px)
-      if (botanicalLayerRef.current) {
-        botanicalLayerRef.current.style.transform = `translate3d(${(currentX * -2).toFixed(2)}px, ${(currentY * -2).toFixed(2)}px, 0)`;
-      }
-      // LAYER 04 — Depth Image (max 2.5px)
-      if (depthImageRef.current) {
-        depthImageRef.current.style.transform = `translate3d(${(currentX * -2.5).toFixed(2)}px, ${(currentY * -2.5 + currentScrollY * 0.02).toFixed(2)}px, 0) scale(1.01)`;
-      }
-      // LAYER 05 — Foreground Accents (max 2.5px)
-      if (foregroundLayerRef.current) {
-        foregroundLayerRef.current.style.transform = `translate3d(${(currentX * 2.5).toFixed(2)}px, ${(currentY * 2.5).toFixed(2)}px, 0)`;
-      }
-
-      animId = requestAnimationFrame(animate);
-    };
-
-    const handleMouseMove = (e) => {
-      if (window.innerWidth < 992) return;
-      const xPercent = (e.clientX / window.innerWidth - 0.5) * 2; // -1 to 1
-      const yPercent = (e.clientY / window.innerHeight - 0.5) * 2; // -1 to 1
-      targetX = xPercent;
-      targetY = yPercent;
-    };
-
-    const handleScroll = () => {
-      targetScrollY = Math.min(window.scrollY, 250);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    animId = requestAnimationFrame(animate);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('scroll', handleScroll);
-      if (animId) cancelAnimationFrame(animId);
-    };
   }, []);
 
   // Calendar Helpers
@@ -578,7 +508,7 @@ export default function BookingPage({ onBackToHome }) {
       {/* ====================================================================
           Z-DEPTH LAYER 02 — ATMOSPHERIC LIGHT POOLS (SOFT BLURRED CHAMPAGNE)
           ==================================================================== */}
-      <div className="avs-z-light-layer" ref={lightLayerRef} aria-hidden="true">
+      <div className="avs-z-light-layer" aria-hidden="true">
         <div className="avs-light-pool avs-light-pool-1"></div>
         <div className="avs-light-pool avs-light-pool-2"></div>
         <div className="avs-light-pool avs-light-pool-3"></div>
@@ -587,7 +517,7 @@ export default function BookingPage({ onBackToHome }) {
       {/* ====================================================================
           Z-DEPTH LAYER 03 — BOTANICAL LEAF LINE-ART ELEMENTS (DIFFERENT DEPTHS)
           ==================================================================== */}
-      <div className="avs-z-botanical-layer" ref={botanicalLayerRef} aria-hidden="true">
+      <div className="avs-z-botanical-layer" aria-hidden="true">
         {/* Top-Left Branch Line-Art */}
         <svg className="avs-botanical-svg avs-botanical-top-left" viewBox="0 0 200 200">
           <path d="M20,180 Q60,120 120,80 T180,20" strokeWidth="1.2" strokeLinecap="round" />
@@ -625,7 +555,6 @@ export default function BookingPage({ onBackToHome }) {
           ==================================================================== */}
       <div className="avs-z-depth-image-layer" aria-hidden="true">
         <img
-          ref={depthImageRef}
           src="/hero_relaxation.jpg"
           alt=""
           className="avs-depth-image"
@@ -635,7 +564,7 @@ export default function BookingPage({ onBackToHome }) {
       {/* ====================================================================
           Z-DEPTH LAYER 05 — FOREGROUND GOLD DUST & FINE LINES
           ==================================================================== */}
-      <div className="avs-z-foreground-layer" ref={foregroundLayerRef} aria-hidden="true">
+      <div className="avs-z-foreground-layer" aria-hidden="true">
         <div className="avs-gold-particle gp-1"></div>
         <div className="avs-gold-particle gp-2"></div>
         <div className="avs-gold-particle gp-3"></div>
